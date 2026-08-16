@@ -241,6 +241,9 @@ button.grow:active{transform:scale(.97)}
           <button class="act" data-a="tickle"><span>🪶</span>挠痒</button>
           <button class="act" data-a="flip"><span>🙃</span>倒挂</button>
           <button class="act" data-a="play"><span>🎲</span>陪玩</button>
+          <button class="act" data-a="swim"><span>🏊</span>游泳</button>
+          <button class="act" data-a="dive"><span>🤿</span>潜水</button>
+          <button class="act" data-a="workout"><span>🏋️</span>健身</button>
         </div>
       </section>
 
@@ -386,7 +389,7 @@ const SIZES=["tiny","small","medium","large"];
 const SHINES=["glossy","matte"];
 const MOUTH={toast:'round',cup:'jagged',camera:'cat',milk:'heart'};
 
-const state={char:"toast",growth:0,fam:4,energy:30,cling:30,mischief:16,calm:20,explore:12,battery:76,love:6,meet:0,hatched:false,variant:null,genes:null,faceMood:null,cracking:0,baby:null,view:'pet',hiding:false,babyGrowth:0};
+const state={char:"toast",growth:0,fam:4,energy:30,cling:30,mischief:16,calm:20,explore:12,battery:76,love:6,meet:0,hatched:false,variant:null,genes:null,faceMood:null,cracking:0,baby:null,view:'pet',hiding:false,babyGrowth:0,action:null};
 const partner={char:"milk",variant:VARIANTS.milk[0],genes:null};
 const d=()=>SPECIES[state.char];
 const ph=()=>state.hatched?Math.min(9,Math.floor(state.growth/10)):0;
@@ -501,7 +504,7 @@ function sparkle(cx,cy,sz,c="#fff"){return `<path d="M${cx} ${cy-sz} Q${cx} ${cy
 function scaleG(g,s){return s<1?`<g transform="translate(120 120) scale(${s}) translate(-120 -120)">${g}</g>`:g;}
 
 function eggArt(level){
-  const base=`<path d="M120 50 C158 50 172 82 172 120 C172 158 158 190 120 190 C82 190 68 158 68 120 C68 82 82 50 120 50 Z" fill="#fff6e8" stroke="#e8c9a0" stroke-width="5"/>`;
+  const base=`<path d="M120 42 C160 42 178 84 178 130 C178 170 152 196 120 196 C88 196 62 170 62 130 C62 84 80 42 120 42 Z" fill="#fff6e8" stroke="#e8c9a0" stroke-width="5"/>`;
   if(!level)return `<g>${base}
     <ellipse class="eye" cx="98" cy="118" rx="9" ry="11" fill="#3a2b27"/><circle cx="101" cy="114" r="3.4" fill="#fff"/>
     <ellipse class="eye" cx="142" cy="118" rx="9" ry="11" fill="#3a2b27"/><circle cx="145" cy="114" r="3.4" fill="#fff"/>
@@ -532,9 +535,31 @@ function peekSVG(){
     <path d="M108 122 Q120 131 132 122" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
+function goggles(){return `<g><circle cx="96" cy="106" r="14" fill="#8fd3f0" opacity=".75" stroke="#5f9fbf" stroke-width="3"/><circle cx="144" cy="106" r="14" fill="#8fd3f0" opacity=".75" stroke="#5f9fbf" stroke-width="3"/><path d="M110 106 H130" stroke="#5f9fbf" stroke-width="3"/><path d="M82 106 L68 110 M158 106 L172 110" stroke="#5f9fbf" stroke-width="3"/></g>`;}
+function snorkel(){return `<path d="M120 130 L120 92 L152 84" stroke="#ffd166" stroke-width="5" fill="none" stroke-linecap="round"/>`;}
+function bubbles(cx,cy){return `<g fill="#c9ecff" opacity=".85"><circle cx="${cx}" cy="${cy}" r="5"/><circle cx="${cx+10}" cy="${cy-12}" r="3.5"/><circle cx="${cx-6}" cy="${cy-18}" r="2.5"/></g>`;}
+function dumbbell(){return `<g><rect x="40" y="150" width="13" height="27" rx="6" fill="#6b7280"/><rect x="187" y="150" width="13" height="27" rx="6" fill="#6b7280"/><rect x="53" y="160" width="134" height="7" rx="3.5" fill="#9aa0a6"/></g>`;}
+function sweat(cx,cy){return `<path d="M${cx} ${cy} q5 9 0 13 q-5 -4 0 -13" fill="#8fd3f0"/>`;}
+function motionLines(){return `<g stroke="#ffffff" stroke-width="3" opacity=".55" stroke-linecap="round"><path d="M28 118 H66"/><path d="M24 134 H58"/><path d="M32 102 H62"/></g>`;}
+function waves(){return `<g stroke="#ffffff" stroke-width="4" fill="none" opacity=".6" stroke-linecap="round"><path d="M46 172 Q58 164 70 172 Q82 180 94 172"/><path d="M108 182 Q120 174 132 182 Q144 190 156 182"/><path d="M168 170 Q180 162 192 170"/></g>`;}
+function actionSVG(action){
+  const ch=state.char,pal=myPal();
+  const pet=creature(ch,'happy',pal);
+  if(action==='run')return `<svg viewBox="0 0 240 240"><g transform="rotate(-7 120 120)">${pet}</g>${motionLines()}${sweat(152,62)}</svg>`;
+  if(action==='swim')return `<svg viewBox="0 0 240 240"><path d="M30 148 Q80 134 130 148 Q180 162 210 148 L210 240 L30 240 Z" fill="#4dabf7" opacity=".45"/><g transform="translate(0 -8)">${pet}</g>${waves()}${bubbles(82,50)}</svg>`;
+  if(action==='dive')return `<svg viewBox="0 0 240 240"><rect x="0" y="0" width="240" height="240" fill="#1b3a5c" opacity=".35"/>${pet}${goggles()}${snorkel()}${bubbles(72,138)}${bubbles(182,116)}<g fill="#8fd3f0" opacity=".7"><path d="M58 58 q-14 -8 0 -16 q14 8 0 16"/></g></svg>`;
+  if(action==='workout')return `<svg viewBox="0 0 240 240"><g transform="rotate(3 120 120)">${pet}</g>${dumbbell()}${sweat(150,58)}${sweat(90,64)}</svg>`;
+  return `<svg viewBox="0 0 240 240">${pet}</svg>`;
+}
+let actionTimer=null;
+function doAction(action,mood,ms=2600){
+  state.action=action;setFace(mood,ms);
+  clearTimeout(actionTimer);actionTimer=setTimeout(()=>{state.action=null;renderLife();},ms);
+}
 function stageSVG(){
   if(!state.hatched)return `<svg viewBox="0 0 240 240">${eggArt(state.cracking)}</svg>`;
   if(state.hiding)return peekSVG();
+  if(state.action)return actionSVG(state.action);
   const ch=state.char,v=state.variant,pal={c:v.c,c2:v.c2,acc:v.acc};
   const a=arch(),p=ph();
   if(state.baby){
@@ -716,7 +741,7 @@ function interact(k){
     setFace('love');say(pick(d().petted.warm));growBaby();render();return;
   }
   if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.explore=clamp(state.explore+0.8);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);setFace('happy');say(ph()<2?'摇摇晃晃地学走路……':pick(['今天去哪儿？','出发出发！','跟你一起走走。','风好舒服呀。']));render();return;}
-  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.explore=clamp(state.explore+1);state.battery=clamp(state.battery-.6);setFace('excited');say(pick(['慢一点！我要飞出去啦！','哇哇哇太快了！','等等我等等我！','你跑步像一阵风！']));render();return;}
+  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.explore=clamp(state.explore+1);state.battery=clamp(state.battery-.6);doAction('run','excited',2400);say(pick(['慢一点！我要飞出去啦！','哇哇哇太快了！','等等我等等我！','你跑步像一阵风！']));render();return;}
   if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);setFace('dizzy',1800);say(state.char==='milk'?pick(['别摇了！奶泡全糊脸上了！','啊啊啊草莓要飞出去了！']):pick(['晕啦！你故意的是吧！','住手！我头晕！','地震了吗？！']));render();return;}
   if(k==='idle'){state.hiding=true;state.fam=clamp(state.fam-.7);state.calm=clamp(state.calm+2);state.mischief=clamp(state.mischief+.5);setFace('sleepy');say('……我躲起来啦，来找我呀。');render();return;}
   if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);state.calm=clamp(state.calm+1.2);setFace('excited');say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。','充满电，满血复活！']));growBaby();render();return;}
@@ -725,6 +750,9 @@ function interact(k){
   if(k==='tickle'){state.cling=clamp(state.cling+2);state.mischief=clamp(state.mischief+1);setFace('excited');say(pick(['哈哈哈别挠了！','痒死啦！','住手……哈哈哈！']));render();return;}
   if(k==='flip'){state.mischief=clamp(state.mischief+2);setFace('dizzy',1800);say('世界翻过来了……');render();return;}
   if(k==='play'){state.explore=clamp(state.explore+2);state.energy=clamp(state.energy+1);state.fam=clamp(state.fam+1);setFace('happy');say(pick(d().play));growBaby();render();return;}
+  if(k==='swim'){state.energy=clamp(state.energy+2);state.explore=clamp(state.explore+1);doAction('swim','excited');say(pick(['扑通！下水啦！','蛙泳自由泳都会！','水好凉快呀～']));render();return;}
+  if(k==='dive'){state.explore=clamp(state.explore+2.5);doAction('dive','happy');say(pick(['戴上面罩，下潜！','海底好美呀！','咕噜咕噜……']));render();return;}
+  if(k==='workout'){state.energy=clamp(state.energy+2.5);state.calm=clamp(state.calm-1);doAction('workout','naughty');say(pick(['一二三四！','举铁举铁！','今天也要变强！']));render();return;}
 }
 
 document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>interact(b.dataset.a));
