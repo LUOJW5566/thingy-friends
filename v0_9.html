@@ -422,8 +422,8 @@ function arch(){
   const m=MBTI[code]||MBTI.ENFP;
   return{key:m.n,code,emoji:m.e,color:m.color,mood:m.mood,sub:code};
 }
-function myPal(){const v=state.variant;return v?{c:v.c,c2:v.c2,acc:v.acc}:{c:d().shell2,c2:d().shell3,acc:d().shell1};}
-function partnerPal(){const v=partner.variant;return {c:v.c,c2:v.c2,acc:v.acc};}
+function myPal(){const v=state.variant;return v?{c:v.c,c2:v.c2,acc:v.acc,grad:v.grad}:{c:d().shell2,c2:d().shell3,acc:d().shell1};}
+function partnerPal(){const v=partner.variant;return {c:v.c,c2:v.c2,acc:v.acc,grad:v.grad};}
 let lastTalk='';
 function talkLine(){
   const p=d().talks,a=state.fam<25?p.low:state.fam<55?p.mid:state.fam<85?p.high:p.savage;
@@ -558,23 +558,21 @@ function doAction(action,mood,ms=2600){
 }
 function stageSVG(){
   if(!state.hatched)return `<svg viewBox="0 0 240 240">${eggArt(state.cracking)}</svg>`;
-  if(state.hiding)return peekSVG();
-  if(state.action)return actionSVG(state.action);
-  const ch=state.char,v=state.variant,pal={c:v.c,c2:v.c2,acc:v.acc};
+  const ch=state.char,v=state.variant,pal={c:v.c,c2:v.c2,acc:v.acc,grad:v.grad};
   const a=arch(),p=ph();
-  if(state.baby){
+  if(state.baby&&state.view!=='pet'){
     const grow=state.babyGrowth===0?0.6:state.babyGrowth===1?0.8:1;
     if(state.view==='baby'){
       const tip=state.babyGrowth<2?'<text x="120" y="204" text-anchor="middle" font-size="12" fill="#f7ecf2cc">🍼 幼崽（多陪它玩会长大）</text>':'';
       return `<svg viewBox="0 0 240 240">${scaleG(babyInner(state.baby),grow)}${tip}</svg>`;
     }
-    if(state.view==='family'){
-      return `<svg viewBox="0 0 240 240"><g class="parentPet" transform="translate(-34 -28)">${scaleG(creature(ch,'love',pal),0.42)}</g><g class="hatch">${scaleG(babyInner(state.baby),grow*0.95)}</g><text class="famHeart" x="150" y="124" font-size="22">❤️</text></svg>`;
-    }
+    return `<svg viewBox="0 0 240 240"><g class="parentPet" transform="translate(-34 -28)">${scaleG(creature(ch,'love',pal),0.42)}</g><g class="hatch">${scaleG(babyInner(state.baby),grow*0.95)}</g><text class="famHeart" x="150" y="124" font-size="22">❤️</text></svg>`;
   }
+  if(state.hiding)return peekSVG();
+  if(state.action)return actionSVG(state.action);
   const mood=state.faceMood||a.mood;
   if(p===1)return `<svg viewBox="0 0 240 240">${shellBits()}${scaleG(creature(ch,'excited',pal),0.5)}</svg>`;
-  const scale=[0.58,0.7,0.8,0.9,1][Math.max(0,p-2)]||1;
+  const scale=[0.58,0.7,0.8,0.9,1][Math.min(4,Math.max(0,p-2))];
   let inner=scaleG(creature(ch,mood,pal),scale);
   inner+=rarityGlow(v);
   if(p>=7)inner+=signatureFeature(ch);
@@ -585,7 +583,7 @@ function stageSVG(){
 
 /* ---------- 基因 & 宝宝 ---------- */
 function geneOf(ch,variant){
-  return {species:ch,variantName:variant.n,rarity:variant.r,c:variant.c,c2:variant.c2,acc:variant.acc,feature:SPECIES[ch].featureKey,ear:pick(EARS),eye:pick(EYES),pattern:pick(PATTERNS),size:pick(SIZES),shine:pick(SHINES),trait:pick(TRAITS)};
+  return {species:ch,variantName:variant.n,rarity:variant.r,c:variant.c,c2:variant.c2,acc:variant.acc,grad:variant.grad,feature:SPECIES[ch].featureKey,ear:pick(EARS),eye:pick(EYES),pattern:pick(PATTERNS),size:pick(SIZES),shine:pick(SHINES),trait:pick(TRAITS)};
 }
 function mergeGene(a,b){const p=(x,y)=>Math.random()>.5?x:y;return {species:p(a.species,b.species),variantName:"混血宝宝",rarity:"混血",c:p(a.c,b.c),c2:p(a.c2,b.c2),acc:p(a.acc,b.acc),feature:p(a.feature,b.feature),ear:p(a.ear,b.ear),eye:p(a.eye,b.eye),pattern:p(a.pattern,b.pattern),size:p(a.size,b.size),shine:p(a.shine,b.shine),trait:p(a.trait,b.trait)};}
 function bodyShape(type,c,c2){
@@ -617,8 +615,6 @@ function babyInner(g){
   const gloss=g.shine==='glossy'?`<ellipse cx="100" cy="92" rx="24" ry="15" fill="#fff" opacity=".35"/>`:'';
   return `<g transform="translate(120 120) scale(${size}) translate(-120 -120)">${ears}${bodyShape(g.species,g.c,g.c2)}${patternArt(g.pattern,g.c2)}${face({mood,eye:g.eye,mouth:MOUTH[g.species],eyeY:118,gap:46,r:10,mouthY:138})}${featureArt(g.feature)}${gloss}</g>`;
 }
-function babySVG(g){return `<svg viewBox="0 0 240 240">${babyInner(g)}</svg>`;}
-
 function unlockText(){
   if(!state.hatched)return"一颗盲盒蛋。点「开蛋」看看会开出什么颜色。";
   const p=ph();
@@ -718,7 +714,6 @@ function hatch(){
       state.variant=weightedPick(VARIANTS[state.char]);
       state.hatched=true;state.growth=12;state.genes=geneOf(state.char,state.variant);
       const v=state.variant,rar=v.r;
-      evolveFX();
       say("破壳啦！是一只「"+v.n+d().cn+"」！"+(rar!=="普通"?(" "+rar+"形态！"):""),2600);
       if(rar!=="普通")setTimeout(()=>say(rar==="隐藏"||rar==="传说"?"💎 "+rar+"款！超稀有！":"✨ "+rar+"款！",1800),1400);
       render();
@@ -743,7 +738,7 @@ function interact(k){
   if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.explore=clamp(state.explore+0.8);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);setFace('happy');say(ph()<2?'摇摇晃晃地学走路……':pick(['今天去哪儿？','出发出发！','跟你一起走走。','风好舒服呀。']));render();return;}
   if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.explore=clamp(state.explore+1);state.battery=clamp(state.battery-.6);doAction('run','excited',2400);say(pick(['慢一点！我要飞出去啦！','哇哇哇太快了！','等等我等等我！','你跑步像一阵风！']));render();return;}
   if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);setFace('dizzy',1800);say(state.char==='milk'?pick(['别摇了！奶泡全糊脸上了！','啊啊啊草莓要飞出去了！']):pick(['晕啦！你故意的是吧！','住手！我头晕！','地震了吗？！']));render();return;}
-  if(k==='idle'){state.hiding=true;state.fam=clamp(state.fam-.7);state.calm=clamp(state.calm+2);state.mischief=clamp(state.mischief+.5);setFace('sleepy');say('……我躲起来啦，来找我呀。');render();return;}
+  if(k==='idle'){clearTimeout(hidingTimer);state.hiding=true;state.fam=clamp(state.fam-.7);state.calm=clamp(state.calm+2);state.mischief=clamp(state.mischief+.5);setFace('sleepy');say('……我躲起来啦，来找我呀。');render();return;}
   if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);state.calm=clamp(state.calm+1.2);setFace('excited');say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。','充满电，满血复活！']));growBaby();render();return;}
   if(k==='drain'){state.battery=clamp(state.battery-25);setFace('sad');say(state.battery<10?'我真的要饿死了……':state.battery<30?'我饿了，给口电吃嘛。':'肚子有点空。');render();return;}
   if(k==='lift'){state.energy=clamp(state.energy+2);state.explore=clamp(state.explore+1);state.fam=clamp(state.fam+1);setFace('surprised');say(pick(['好高呀——！','再举高一点！','我在飞！']));render();return;}
@@ -757,8 +752,8 @@ function interact(k){
 
 document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>interact(b.dataset.a));
 document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
-  clearTimeout(hatchTimer);
-  state.char=b.dataset.c;state.growth=0;state.fam=4;state.love=6;state.hatched=false;state.variant=null;state.genes=null;state.battery=76;state.meet=0;state.cracking=0;state.baby=null;state.view='pet';state.hiding=false;state.babyGrowth=0;
+  clearTimeout(hatchTimer);clearTimeout(actionTimer);clearTimeout(faceTimer);clearTimeout(hidingTimer);clearInterval(moleTimer);moleActive=false;
+  state.char=b.dataset.c;state.growth=0;state.fam=4;state.love=6;state.hatched=false;state.variant=null;state.genes=null;state.battery=76;state.meet=0;state.cracking=0;state.baby=null;state.view='pet';state.hiding=false;state.babyGrowth=0;state.action=null;state.faceMood=null;
   state.energy=30;state.cling=30;state.mischief=16;state.calm=20;state.explore=12;lastPhase=null;
   render();say('一颗新的盲盒蛋……');
 });
@@ -843,12 +838,12 @@ async function enableSensors(){
     },true);
   }catch(e){msg.textContent='启用失败：'+e.message+'。请使用 Safari 并允许运动与方向访问。';}
 }
-let moleTimer=null,moleScore=0,moleActive=false;
+let moleTimer=null,moleScore=0,moleActive=false,hidingTimer=null;
 function renderMoles(){
   $("#moleGrid").innerHTML='<div class="mole">🕳️</div><div class="mole">🕳️</div><div class="mole">🕳️</div>';
   document.querySelectorAll('.mole').forEach(m=>m.onclick=()=>{
     if(!moleActive)return;
-    if(m.classList.contains('up')){moleScore++;state.love=clamp(state.love+2);m.classList.remove('up');m.textContent='✨';popHearts();render();}
+    if(m.classList.contains('up')){moleScore++;state.love=clamp(state.love+2);m.classList.remove('up');m.textContent='✨';render();}
   });
 }
 function popMole(){
