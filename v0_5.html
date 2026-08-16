@@ -132,6 +132,27 @@ header{display:flex;justify-content:space-between;align-items:center;gap:10px;ma
 .gchip b{font-family:var(--fontD)}
 button.grow{width:100%;margin-top:9px;border:1.5px solid #e2b85a;background:#fff2c6;border-radius:14px;padding:11px;font-size:11px;font-weight:800;font-family:var(--fontD);transition:.2s}
 button.grow:active{transform:scale(.97)}
+/* evolution tree */
+.evoTree{display:flex;flex-direction:column;align-items:center;gap:7px}
+.evoRoot{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 12px}
+.evoRoot svg,.evoNode svg{width:56px;height:56px}
+.evoLink{color:#d9c7b4;font-size:12px;line-height:1;margin:-1px 0}
+.evoBranches{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%}
+.evoNode{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 5px;text-align:center;transition:.2s}
+.evoNode .nm{font-family:var(--fontD);font-size:11px;display:block;margin-top:3px}
+.evoNode .tp{font-size:8.5px;color:var(--muted)}
+.evoNode .st{height:5px;background:#eee5db;border-radius:99px;overflow:hidden;margin-top:5px}
+.evoNode .st i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.evoNode.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);transform:translateY(-2px)}
+/* couple snuggle */
+.socialStage{display:flex;align-items:flex-end;justify-content:center;position:relative;height:112px;margin-top:7px;overflow:hidden;border:1.5px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff6f0,#fdf0f4)}
+.socialStage svg{width:76px;height:76px}
+.petSlot{transition:transform .55s cubic-bezier(.34,1.56,.64,1);z-index:2}
+.socialStage.snuggle .petSlot.left{transform:translateX(30px)}
+.socialStage.snuggle .petSlot.right{transform:translateX(-30px)}
+.hearts{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
+.heartPop{position:absolute;font-size:16px;opacity:0;animation:heartFloat 1.2s ease-out forwards}
+@keyframes heartFloat{0%{opacity:0;transform:translate(-50%,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-46px) scale(1.15)}}
 @media(max-width:800px){
   .grid{grid-template-columns:1fr}
   .stage{height:450px}
@@ -242,6 +263,7 @@ button.grow:active{transform:scale(.97)}
           <button class="tab on" data-tab="unlock">解锁</button>
           <button class="tab" data-tab="social">社交</button>
           <button class="tab" data-tab="gene">基因/宝宝</button>
+          <button class="tab" data-tab="evo">进化树</button>
         </div>
         <div class="tabpane on" id="unlock">
           <div class="mini"><b>互动会随成长解锁</b><div id="unlockText"></div></div>
@@ -250,6 +272,11 @@ button.grow:active{transform:scale(.97)}
           <div class="socialGrid">
             <div class="mini"><b>我的宠物</b><span id="minePet"></span></div>
             <div class="mini"><b>对方宠物</b><span>🍓 莓噜 · 熟人</span></div>
+          </div>
+          <div class="socialStage" id="socialStage">
+            <div class="petSlot left" id="petMine"></div>
+            <div class="hearts" id="hearts"></div>
+            <div class="petSlot right" id="petOther"></div>
           </div>
           <div class="heartline" id="loveLine"></div>
           <button class="grow" id="meetBtn">让两只宠物见面一次</button>
@@ -262,6 +289,10 @@ button.grow:active{transform:scale(.97)}
             <div class="babyGenes" id="babyGenes"></div>
             <div class="note" id="babyNote">宝宝会继承双方的 Body / Feature / Color / Trait。</div>
           </div>
+        </div>
+        <div class="tabpane" id="evo">
+          <div class="evoTree" id="evoTree"></div>
+          <div class="note">性格由你的行为决定：走路/跑步养出「活力」，常摸摸养出「黏人」，常猛摇养出「顽皮」。</div>
         </div>
       </section>
     </div>
@@ -277,23 +308,46 @@ const DEFS={
   toast:{en:"MELLO",cn:"麦啰",kicker:"BAKERY HOME · 001",shell1:"#e8a15c",shell2:"#c97f4c",shell3:"#f3cf88",emo:"🍞",
     stages:["面粉","加蛋","搅拌","面团","发酵","入炉","烘烤","吐司出生","抹黄油","性格进化"],
     desc:["一小撮刚醒来的面粉","面粉里掉进了一颗蛋","开始被搅成一团","黏糊糊的小面团出现了","它正在偷偷发酵、越来越鼓","被推进了温暖的小烤箱","慢慢烤出金黄色的外壳","麦啰真正出生了","头顶多了一块黄油","属于它的性格分支觉醒了"],
-    talks:{low:["你……是谁？","这里是哪里呀？","你会一直带着我吗？"],mid:["你回来啦。","今天出去玩吗？","摸一下也不是不行。"],high:["哟，终于想起我了？","今天这点步数，你认真的？","别摸了别摸了……再摸一下。"],savage:["哥们，今天就这点运动量？","你是不是背着我养别的了？","我都熟成这样了，还装不认识？"]},
+    talks:{low:["你……是谁？","这里是哪里呀？","你会一直带着我吗？","我好像刚醒过来……","外面是什么声音呀？","我们……还不算认识吧。"],mid:["你回来啦。","今天出去玩吗？","摸一下也不是不行。","我今天有好好待着哦。","你今天看起来挺忙的。","那个……能多陪我一会吗？"],high:["哟，终于想起我了？","今天这点步数，你认真的？","别摸了别摸了……再摸一下。","今天去哪浪了？从实招来。","我等你一天了都。","要不要比赛谁先到家？"],savage:["哥们，今天就这点运动量？","你是不是背着我养别的了？","我都熟成这样了，还装不认识？","厕所是你今天最远的旅行吧。","再躺下去我就申请换主人了。","行，你忙，我继续在包上发光发热。"]},
     genes:{body:"Toast",feature:"Butter",color:"Caramel",trait:"Curious",c:"#e8a15c",c2:"#c97f4c"}},
   cup:{en:"MUGU",cn:"咕杯",kicker:"COFFEE HOME · 002",shell1:"#9fd0bd",shell2:"#6fb097",shell3:"#d5efe6",emo:"☕️",
     stages:["空杯","咖啡豆","研磨","萃取","蒸汽","奶泡","拿铁","咕杯出生","拉花","性格进化"],
     desc:["一只空空的小杯子","几颗咖啡豆掉了进来","日常晃动把它慢慢磨碎","浓缩咖啡正在滴出来","杯口升起了蒸汽","奶泡慢慢铺满杯面","一杯拿铁完成了","咕杯正式醒过来","杯面多了一朵拉花","属于它的性格分支觉醒了"],
-    talks:{low:["杯子里怎么空空的…","你是店员吗？","可以不要晃太快吗？"],mid:["今天要续杯吗？","你又来了。","摸杯沿可以。"],high:["哟，咖啡搭子。","今天精神不太行啊。","再熬夜我可不陪你。"],savage:["不是吧，又熬夜？","你这作息比我咖啡还黑。","我建议你先给自己充个电。"]},
+    talks:{low:["杯子里怎么空空的…","你是店员吗？","可以不要晃太快吗？","这里好安静……","我的咖啡豆还没到货吗？","你……会给我续杯吗？"],mid:["今天要续杯吗？","你又来了。","摸杯沿可以。","今天的浓度刚好。","要不要来一杯手冲？","你看起来需要咖啡因。"],high:["哟，咖啡搭子。","今天精神不太行啊。","再熬夜我可不陪你。","这杯我请你，下次你请我。","你今天的黑眼圈赶上我了。","续杯续命，老规矩？"],savage:["不是吧，又熬夜？","你这作息比我咖啡还黑。","我建议你先给自己充个电。","再喝下去，你晚上又睡不着。","你血管里流的怕是浓缩咖啡。","别晃我，再晃奶泡全塌了。"]},
     genes:{body:"Cup",feature:"Foam",color:"Mint",trait:"Calm",c:"#9fd0bd",c2:"#6fb097"}},
   camera:{en:"CAMI",cn:"咔米",kicker:"DARKROOM HOME · 003",shell1:"#8d84b5",shell2:"#5f5787",shell3:"#c9c3e4",emo:"📷",
     stages:["暗箱","底片","显影","定影","对焦","成像","咔米出生","镜头","取景","性格进化"],
     desc:["暗箱里什么都看不见","一张底片开始出现","轮廓正在慢慢显影","画面被牢牢定住","眼睛终于能对焦了","画面一点点变清晰","咔米真正成像了","多了一颗会反光的镜头","开始学着取景看世界","属于它的性格分支觉醒了"],
-    talks:{low:["谁开灯了？","这里好暗。","你是摄影师吗？"],mid:["今天拍什么？","我看到你啦。","别戳镜头。"],high:["构图一般，再来。","今天光挺烂的。","你拍糊了别赖我。"],savage:["这张也敢留？","你今天是对焦对到月球了？","别看我，先看你的快门。"]},
+    talks:{low:["谁开灯了？","这里好暗。","你是摄影师吗？","我还没完全显影……","别靠太近，我害羞。","快门声……是你按的吗？"],mid:["今天拍什么？","我看到你啦。","别戳镜头。","光还不错，可以出片。","记得擦镜头。","你构图进步了没？"],high:["构图一般，再来。","今天光挺烂的。","你拍糊了别赖我。","黄金时刻要到了，走不走？","这张能发朋友圈。","让我看看你拍的啥。"],savage:["这张也敢留？","你今天是对焦对到月球了？","别看我，先看你的快门。","糊成这样，删了吧。","你的白平衡在报复社会。","拍立得都比你会抓拍。"]},
     genes:{body:"Camera",feature:"Lens",color:"Violet",trait:"Observant",c:"#8d84b5",c2:"#5f5787"}},
   milk:{en:"BERRI",cn:"莓噜",kicker:"MILK HOME · 004",shell1:"#f3b8cc",shell2:"#e790ad",shell3:"#fce4ec",emo:"🍓",
     stages:["白牛奶","草莓","浸泡","摇匀","变粉","奶泡","草莓奶","莓噜出生","草莓顶","性格进化"],
     desc:["盒子里只有白牛奶","一颗草莓掉了进来","草莓在奶里慢慢泡开","走路把它一点一点摇匀","整盒正在悄悄变粉","表面冒出了绵密奶泡","草莓奶完成了","莓噜真正醒过来","头顶多了一颗小草莓","属于它的性格分支觉醒了"],
-    talks:{low:["你是谁呀…","这里甜甜的。","不要突然摇我。"],mid:["今天也带我嘛。","可以摸一下。","我有点想你。"],high:["你今天怎么这么晚？","再不摸我我要闹了。","哼，勉强原谅你。"],savage:["你今天是不是忘了我？","又想靠摸两下蒙混过关？","行吧，谁让我认识你这么久。"]},
+    talks:{low:["你是谁呀…","这里甜甜的。","不要突然摇我。","我还有点怕生……","草莓……掉进来了吗？","你会好好对我吗？"],mid:["今天也带我嘛。","可以摸一下。","我有点想你。","今天心情草莓味。","你身上有阳光的味道。","不许只摸一下下。"],high:["你今天怎么这么晚？","再不摸我我要闹了。","哼，勉强原谅你。","抱抱，就一下。","你都一整天没理我了。","我数了，你摸了三次。"],savage:["你今天是不是忘了我？","又想靠摸两下蒙混过关？","行吧，谁让我认识你这么久。","再冷落我，我就……自己长草莓。","你以为哄两句我就消气啦？","算了，谁让你是我的。"]},
     genes:{body:"Milk",feature:"Straw",color:"Strawberry",trait:"Clingy",c:"#f3b8cc",c2:"#e790ad"}}
+};
+
+const EVO={
+  toast:[
+    {stat:"energy",key:"活力",name:"焦糖吐司",mood:"surprised",pal:{c:"#c9804e",c2:"#f3cf88",acc:"#b3541e"}},
+    {stat:"cling",key:"黏人",name:"奶油吐司",mood:"love",pal:{c:"#e8d5b5",c2:"#fdf3e3",acc:"#f7e6c8"}},
+    {stat:"mischief",key:"顽皮",name:"爆浆吐司",mood:"naughty",pal:{c:"#e35d6a",c2:"#f3cf88",acc:"#a8324a"}}
+  ],
+  cup:[
+    {stat:"energy",key:"活力",name:"浓缩咖啡",mood:"surprised",pal:{c:"#4a3028",c2:"#5e4035"}},
+    {stat:"cling",key:"黏人",name:"奶泡拿铁",mood:"love",pal:{c:"#b98a6a",c2:"#f2ead9"}},
+    {stat:"mischief",key:"顽皮",name:"焦糖玛奇朵",mood:"naughty",pal:{c:"#8a5a3a",c2:"#d9a86a"}}
+  ],
+  camera:[
+    {stat:"energy",key:"活力",name:"街拍型",mood:"surprised",pal:{c:"#5f5787",c2:"#ffb347"}},
+    {stat:"cling",key:"黏人",name:"夜猫型",mood:"love",pal:{c:"#2b2b3a",c2:"#8d84b5"}},
+    {stat:"mischief",key:"顽皮",name:"偷拍型",mood:"naughty",pal:{c:"#3f3a55",c2:"#8d84b5"}}
+  ],
+  milk:[
+    {stat:"energy",key:"活力",name:"草莓奶昔",mood:"surprised",pal:{c:"#f39cb7",c2:"#fff1f6",acc:"#e35d6a"}},
+    {stat:"cling",key:"黏人",name:"奶盖型",mood:"love",pal:{c:"#fce4ec",c2:"#ffffff",acc:"#f3b8cc"}},
+    {stat:"mischief",key:"顽皮",name:"莓果炸弹",mood:"naughty",pal:{c:"#e35d6a",c2:"#f8b7ca",acc:"#a8324a"}}
+  ]
 };
 
 const state={char:"toast",growth:6,fam:4,energy:30,cling:30,mischief:16,battery:76,love:6,meet:0};
@@ -306,9 +360,12 @@ function personality(){
   if(state.cling>=state.energy)return"黏人";
   return"活力";
 }
+let lastTalk='';
 function talkLine(){
   const p=d().talks,a=state.fam<25?p.low:state.fam<55?p.mid:state.fam<85?p.high:p.savage;
-  let t=pick(a);
+  let t=pick(a),guard=0;
+  while(t===lastTalk&&a.length>1&&guard++<6)t=pick(a);
+  lastTalk=t;
   if(state.fam>55&&personality()==="顽皮")t+=" 😏";
   if(state.fam>55&&personality()==="黏人"&&Math.random()>.5)t+=" ♥";
   return t;
@@ -345,12 +402,23 @@ function face(o={}){
 function pointedEars(c){return `<path d="M84 96 L70 54 L104 80 Z" fill="${c}"/><path d="M156 96 L170 54 L136 80 Z" fill="${c}"/>`;}
 
 /* ---------- adult creature (stage 7-9) ---------- */
-function creature(char,mood){
+function creature(char,mood,pal){
+  pal=pal||{};
   const f=face({mood});
-  if(char==='toast')return `<rect x="60" y="62" width="120" height="122" rx="46" fill="#c97f4c"/><rect x="68" y="70" width="104" height="106" rx="38" fill="#f3cf88"/><rect x="88" y="52" width="66" height="26" rx="13" fill="#ffd75e" transform="rotate(-5 121 65)"/>${f}`;
-  if(char==='cup')return `<path d="M68 78 H172 L162 176 Q120 192 78 176 Z" fill="#6fb097"/><path d="M70 88 H170 L161 168 Q120 182 80 168 Z" fill="#d5efe6"/><path d="M170 90 h13 a11 11 0 0 1 0 24 h-13" fill="none" stroke="#6fb097" stroke-width="8" stroke-linecap="round"/>${f}`;
-  if(char==='camera')return `<rect x="56" y="72" width="128" height="104" rx="28" fill="#5f5787"/><rect x="66" y="82" width="108" height="84" rx="20" fill="#8d84b5"/><circle cx="120" cy="60" r="10" fill="#e8a15c" stroke="#c97f4c" stroke-width="3"/>${f}`;
-  return `<rect x="72" y="64" width="96" height="128" rx="22" fill="#e790ad"/><rect x="80" y="72" width="80" height="112" rx="16" fill="#fce4ec"/><path d="M114 50 L132 50 L127 70 L119 70 Z" fill="#ff7fa5"/>${f}`;
+  if(char==='toast'){
+    const c=pal.c||'#c97f4c',c2=pal.c2||'#f3cf88',acc=pal.acc||'#ffd75e';
+    return `<rect x="60" y="62" width="120" height="122" rx="46" fill="${c}"/><rect x="68" y="70" width="104" height="106" rx="38" fill="${c2}"/><rect x="88" y="52" width="66" height="26" rx="13" fill="${acc}" transform="rotate(-5 121 65)"/>${f}`;
+  }
+  if(char==='cup'){
+    const c=pal.c||'#6fb097',c2=pal.c2||'#d5efe6';
+    return `<path d="M68 78 H172 L162 176 Q120 192 78 176 Z" fill="${c}"/><path d="M70 88 H170 L161 168 Q120 182 80 168 Z" fill="${c2}"/><path d="M170 90 h13 a11 11 0 0 1 0 24 h-13" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round"/>${f}`;
+  }
+  if(char==='camera'){
+    const c=pal.c||'#5f5787',c2=pal.c2||'#8d84b5',acc=pal.acc||'#e8a15c';
+    return `<rect x="56" y="72" width="128" height="104" rx="28" fill="${c}"/><rect x="66" y="82" width="108" height="84" rx="20" fill="${c2}"/><circle cx="120" cy="60" r="10" fill="${acc}" stroke="#c97f4c" stroke-width="3"/>${f}`;
+  }
+  const c=pal.c||'#e790ad',c2=pal.c2||'#fce4ec',acc=pal.acc||'#ff7fa5';
+  return `<rect x="72" y="64" width="96" height="128" rx="22" fill="${c}"/><rect x="80" y="72" width="80" height="112" rx="16" fill="${c2}"/><path d="M114 50 L132 50 L127 70 L119 70 Z" fill="${acc}"/>${f}`;
 }
 function sparkle(cx,cy,sz,c="#fff"){return `<path d="M${cx} ${cy-sz} Q${cx} ${cy} ${cx+sz} ${cy} Q${cx} ${cy} ${cx} ${cy+sz} Q${cx} ${cy} ${cx-sz} ${cy} Q${cx} ${cy} ${cx} ${cy-sz} Z" fill="${c}"/>`;}
 
@@ -480,6 +548,7 @@ function render(){
   $("#minePet").textContent=x.cn+" · "+relation();
   $("#loveLine").textContent="关系："+(state.love<20?"初次见面":state.love<45?"朋友":state.love<70?"暧昧":state.love<90?"恋爱":"老夫老妻")+" · Love "+Math.round(state.love);
   $("#geneGrid").innerHTML=Object.entries(x.genes).filter(([k])=>k!=='c'&&k!=='c2').map(([k,v])=>`<div><b>${k}</b><br>${v}</div>`).join('');
+  evoTree();renderSocial();
   document.querySelectorAll('.cbtn').forEach(b=>b.classList.toggle('on',b.dataset.c===state.char));
   if(lastPhase!==null&&p!==lastPhase)evolveFX();
   lastPhase=p;
@@ -488,19 +557,51 @@ function evolveFX(){
   const s=$("#spark");s.classList.remove('on');void s.offsetWidth;s.classList.add('on');
   const l=$("#life");l.classList.remove('pop');void l.offsetWidth;l.classList.add('pop');
 }
+function evoTree(){
+  const list=EVO[state.char]||EVO.toast;
+  const p=personality();
+  const root=`<svg viewBox="0 0 240 240">${creature(state.char,'happy')}</svg>`;
+  const branches=list.map(b=>{
+    const v=state[b.stat];
+    const act=(p===b.key);
+    return `<div class="evoNode ${act?'active':''}">
+      <svg viewBox="0 0 240 240">${creature(state.char,b.mood,b.pal)}</svg>
+      <span class="nm">${b.name}</span>
+      <span class="tp">${b.key}型 · ${Math.round(v)}</span>
+      <div class="st"><i style="width:${Math.min(100,v)}%"></i></div>
+    </div>`;
+  }).join('');
+  $("#evoTree").innerHTML=`<div class="evoRoot"><span style="font-family:var(--fontD);font-size:11px;line-height:1.3">成年体<br>${d().cn}</span>${root}</div><div class="evoLink">▼ 性格分化 ▼</div><div class="evoBranches">${branches}</div>`;
+}
+function renderSocial(){
+  $("#petMine").innerHTML=`<svg viewBox="0 0 240 240">${creature(state.char,'happy')}</svg>`;
+  $("#petOther").innerHTML=`<svg viewBox="0 0 240 240">${creature('milk','happy')}</svg>`;
+  $("#socialStage").classList.toggle('snuggle',state.love>=60);
+}
+function popHearts(){
+  const h=$("#hearts"),emojis=['❤️','💕','💖','✨'];
+  for(let i=0;i<5;i++){
+    const s=document.createElement('span');
+    s.className='heartPop';s.textContent=pick(emojis);
+    s.style.left=((Math.random()*44)-22)+'px';
+    s.style.animationDelay=(Math.random()*0.4)+'s';
+    h.appendChild(s);
+    setTimeout(()=>s.remove(),1800);
+  }
+}
 
 function interact(k){
   if(k==='talk'){say(talkLine());return;}
   if(k==='pet'){
     if(ph()<2){say('我们……还没熟到可以摸啦。');return;}
     state.fam=clamp(state.fam+2.5);state.cling=clamp(state.cling+2);
-    say(state.fam>60?'摸上瘾了是吧？':'……再摸一下也行。');render();return;
+    say(pick(state.fam>60?['摸上瘾了是吧？','再摸就把我摸秃了。','嘿嘿，多摸两下。','你的手好暖和。']:['……再摸一下也行。','有点痒……不过不讨厌。','可以……再一下下。']));render();return;
   }
-  if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);say(ph()<3?'摇摇晃晃的……':'今天去哪儿？');render();return;}
-  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.battery=clamp(state.battery-.6);say('慢一点！我要飞出去啦！');render();return;}
-  if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);say(state.char==='milk'?'别摇了！奶泡全糊脸上了！':'晕啦！你故意的是吧！');render();return;}
-  if(k==='idle'){state.fam=clamp(state.fam-.7);say(state.fam>55?'哟，终于舍得看我了？':'今天你好忙呀。');render();return;}
-  if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。']));render();return;}
+  if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);say(ph()<3?'摇摇晃晃的……':pick(['今天去哪儿？','出发出发！','跟你一起走走。','风好舒服呀。']));render();return;}
+  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.battery=clamp(state.battery-.6);say(pick(['慢一点！我要飞出去啦！','哇哇哇太快了！','等等我等等我！','你跑步像一阵风！']));render();return;}
+  if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);say(state.char==='milk'?pick(['别摇了！奶泡全糊脸上了！','啊啊啊草莓要飞出去了！']):pick(['晕啦！你故意的是吧！','住手！我头晕！','地震了吗？！']));render();return;}
+  if(k==='idle'){state.fam=clamp(state.fam-.7);say(state.fam>55?pick(['哟，终于舍得看我了？','等你等得都快长蘑菇了。']):pick(['今天你好忙呀。','我有点无聊了……']));render();return;}
+  if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。','充满电，满血复活！']));render();return;}
   if(k==='drain'){state.battery=clamp(state.battery-25);say(state.battery<10?'我真的要饿死了……':state.battery<30?'我饿了，给口电吃嘛。':'肚子有点空。');render();}
 }
 
@@ -522,6 +623,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
 $("#meetBtn").onclick=()=>{
   if(ph()<7){say('还太小，先长大一点再交朋友。');return;}
   state.meet++;state.love=clamp(state.love+8+Math.random()*6);
+  popHearts();
   say(pick(['你是谁呀？','又见面啦！','她来了！快看！','今天可以一起玩吗？']));render();
 };
 $("#babyBtn").onclick=()=>{
