@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f6eee4">
+<title>THINGY FRIENDS V0.8 · 物物朋友</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f0e7;--ink:#43342d;--muted:#9a887c;--line:#ecdfd1;--card:#fffdf8;--cream:#fff6ea;--accent:#ff8fab;--accent2:#ffd166;--good:#347860;--shell1:#e8a15c;--shell2:#c97f4c;--shell3:#f3cf88;--shadow:0 24px 60px rgba(88,60,42,.14);--fontD:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",sans-serif;--fontB:"ZCOOL QingKe HuangYou","PingFang SC","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:var(--fontB);color:var(--ink)}
+body{background:radial-gradient(circle at 6% -2%,#ffe2ec 0,transparent 30%),radial-gradient(circle at 98% 0%,#fff1bd 0,transparent 28%),radial-gradient(circle at 88% 100%,#e3f3e6 0,transparent 34%),radial-gradient(circle at 4% 96%,#e6ecff 0,transparent 32%),var(--bg);background-attachment:fixed}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:1120px;margin:auto;padding:16px 14px calc(30px + env(safe-area-inset-bottom));position:relative}
+.deco{position:fixed;z-index:0;pointer-events:none;color:#e8c07a;opacity:.55;filter:drop-shadow(0 4px 8px rgba(120,80,40,.15));animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(12deg)}}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:2}
+.brandWrap{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:linear-gradient(145deg,#fff,#f7e6d8);display:grid;place-items:center;box-shadow:0 8px 20px rgba(120,70,40,.16),inset 0 0 0 2px #fff;font-size:30px}
+.brand{font-family:var(--fontD);font-size:24px;font-weight:900}
+.brand small{display:block;font-family:var(--fontB);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:.04em;margin-top:1px}
+.badge{font-size:11px;border:1.5px solid var(--line);background:rgba(255,255,255,.75);padding:7px 12px;border-radius:99px;box-shadow:0 4px 12px rgba(120,70,40,.06)}
+.badge.rare{background:#fff4e0;border-color:#ffb84d;color:#b06a00}
+.badge.secret{background:#f4ecff;border-color:#c9a4ff;color:#7a3fd0}
+.badge.legend{background:#fff7e0;border-color:#ffd166;color:#b06a00}
+.card{background:rgba(255,253,248,.92);border:1.5px solid var(--line);border-radius:26px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.charbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;margin-bottom:14px;position:relative;z-index:2}
+.cbtn{border:0;background:transparent;border-radius:18px;padding:10px 6px;font-size:11px;font-weight:800;font-family:var(--fontD);transition:.25s}
+.cbtn .emo{display:block;font-size:26px;line-height:1;margin-bottom:3px;filter:drop-shadow(0 3px 4px rgba(120,70,40,.12));transition:.25s}
+.cbtn.on{background:#fff;border:1.5px solid var(--line);box-shadow:0 10px 22px rgba(120,70,40,.14);transform:translateY(-2px)}
+.cbtn.on .emo{transform:scale(1.15) rotate(-6deg)}
+.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:14px;position:relative;z-index:2}
+.hero{padding:22px 22px 18px;overflow:hidden;position:relative}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 12%,rgba(255,255,255,.6),transparent 40%);pointer-events:none}
+.titleRow{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+.kicker{font-size:10px;letter-spacing:.18em;color:var(--muted);font-weight:800;text-transform:uppercase}
+.hero h1{font-family:var(--fontD);font-size:30px;margin:5px 0 3px;line-height:1.1}
+.tiny{font-size:10px;color:var(--muted)}
+.stage{height:486px;display:grid;place-items:center;position:relative}
+.shell{position:relative;width:330px;height:412px;filter:drop-shadow(0 30px 34px rgba(74,48,32,.28));transition:.35s}
+.ring{position:absolute;z-index:1;left:50%;top:0;transform:translateX(-50%);width:46px;height:52px;border:9px solid #b6a89b;border-bottom:0;border-radius:26px 26px 0 0;box-shadow:inset 0 3px 4px #fff8}
+.ring::after{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfc2b5);box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.shellTab{position:absolute;z-index:2;left:50%;top:30px;transform:translateX(-50%);width:74px;height:26px;background:linear-gradient(180deg,var(--shell3),var(--shell1));border-radius:12px;box-shadow:0 6px 10px rgba(74,48,32,.18)}
+.shellBody{position:absolute;z-index:3;inset:52px 22px 18px;background:linear-gradient(150deg,var(--shell1),var(--shell2));border-radius:46% 46% 36% 36%/32% 32% 28% 28%;box-shadow:inset -16px -20px 34px rgba(0,0,0,.22),inset 12px 16px 30px rgba(255,255,255,.42),0 2px 0 rgba(255,255,255,.35) inset}
+.shellBody::before{content:"";position:absolute;left:12%;top:5%;width:36%;height:24%;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,0));border-radius:50%;filter:blur(1px)}
+.shellBody::after{content:"";position:absolute;inset:20px;background:linear-gradient(150deg,var(--shell3),transparent 62%);border-radius:42% 42% 30% 30%/30% 30% 26% 26%;opacity:.55}
+.faceplate{position:absolute;z-index:4;left:50%;top:15%;transform:translateX(-50%);width:120px;height:52px;display:flex;justify-content:center;align-items:center;gap:16px}
+.faceplate i{display:block;width:15px;height:20px;border-radius:50% 50% 45% 45%;background:#3a2b27;position:relative}
+.faceplate i::after{content:"";position:absolute;top:3px;left:3px;width:5px;height:5px;border-radius:50%;background:#fff}
+.screenFrame{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-52%);width:250px;height:250px;border-radius:50%;background:linear-gradient(145deg,#5b4a42,#31241e);box-shadow:inset 0 4px 10px rgba(0,0,0,.55),0 8px 18px rgba(0,0,0,.3),0 0 0 8px #46352e,0 0 0 10px rgba(255,255,255,.12);padding:9px}
+.screen{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 34%,#5d4548,#251d25 76%);overflow:hidden;color:#fff;touch-action:manipulation;box-shadow:inset 0 0 26px rgba(0,0,0,.5)}
+.screen::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.16),transparent 42%);pointer-events:none;z-index:7}
+.life{position:absolute;inset:0;display:grid;place-items:center;z-index:4}
+.life svg{width:100%;height:100%;animation:breathe 3.2s ease-in-out infinite}
+.life.pop{animation:pop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03) translateY(-3px)}}
+@keyframes pop{0%{transform:scale(.55);opacity:0}60%{transform:scale(1.14)}100%{transform:scale(1);opacity:1}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+@keyframes blink{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.08)}}
+.gaze{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .16s ease-out}
+.aura{transform-box:fill-box;transform-origin:center;animation:auraPulse 2.6s ease-in-out infinite}
+@keyframes auraPulse{0%,100%{transform:scale(.92);opacity:.35}50%{transform:scale(1.05);opacity:.7}}
+.spark{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
+.spark.on{animation:sparkle .9s ease}
+.spark::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 40px 18px #ffd166}
+@keyframes sparkle{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+.eggShake{animation:eggShake .5s ease-in-out infinite}
+@keyframes eggShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+.topStatus{position:absolute;top:60px;left:40px;right:40px;z-index:8;display:flex;justify-content:space-between;font-size:9px;color:#f7ecf2d9;font-family:var(--fontB);letter-spacing:.02em}
+.topStatus .bat{display:inline-flex;align-items:center;gap:2px;background:rgba(0,0,0,.28);padding:2px 7px;border-radius:99px;white-space:nowrap}
+.bubble{position:absolute;left:20px;right:20px;bottom:16px;z-index:8;text-align:center;font-size:11.5px;font-weight:800;line-height:1.35;padding:8px 10px;border-radius:14px;background:rgba(22,16,18,.72);color:#fff;backdrop-filter:blur(4px);opacity:0;transform:translateY(8px) scale(.96);transition:.22s;font-family:var(--fontD);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.bubble.show{opacity:1;transform:translateY(0) scale(1)}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:10px;height:10px;background:rgba(22,16,18,.72);clip-path:polygon(0 0,100% 0,50% 100%)}
+.identity{text-align:center;margin-top:4px;position:relative;z-index:2}
+.identity b{font-family:var(--fontD);font-size:18px}
+.identity p{font-size:11px;color:var(--muted);line-height:1.55;margin:5px auto 0;max-width:480px}
+.stats{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;position:relative;z-index:2}
+.pill{font-size:10px;border:1.5px solid var(--line);background:#fff;padding:7px 10px;border-radius:99px;box-shadow:0 4px 10px rgba(120,70,40,.05)}
+.pill b{font-family:var(--fontD);color:#7a5237}
+.side{display:grid;gap:14px}
+.panel{padding:16px}
+.panel h3{font-family:var(--fontD);font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:6px}
+.primary{width:100%;border:0;background:#43342d;color:#fff;border-radius:16px;padding:13px;font-weight:800;font-family:var(--fontD);font-size:14px;box-shadow:0 10px 20px rgba(67,52,45,.24);transition:.2s}
+.primary:active{transform:translateY(1px)}
+.primary.ok{background:var(--good)}
+.note{font-size:10px;line-height:1.5;color:var(--muted);margin-top:7px}
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.act{border:1.5px solid var(--line);background:#fff;border-radius:14px;min-height:56px;font-size:10px;font-weight:800;padding:6px;transition:.16s;font-family:var(--fontD)}
+.act:active{transform:scale(.94);background:#fff3e8}
+.act span{display:block;font-size:21px;margin-bottom:2px}
+.progress{margin:8px 0}
+.prow{display:grid;grid-template-columns:56px 1fr 40px;gap:8px;align-items:center;font-size:10.5px}
+.bar{height:9px;background:#efe6db;border-radius:99px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+.stageChip{font-size:8.5px;text-align:center;padding:7px 3px;border-radius:10px;background:#f3ece6;color:#b3a699;transition:.2s;font-family:var(--fontD)}
+.stageChip.on{background:linear-gradient(135deg,#fff0bf,#ffd9e3);color:#5a4030;box-shadow:0 0 0 2px #ffe195;transform:scale(1.05)}
+.tabs{display:flex;gap:6px;margin-top:6px}
+.tab{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:9px 4px;font-size:10px;font-weight:800;font-family:var(--fontD);transition:.2s}
+.tab.on{background:#43342d;color:#fff;border-color:#43342d}
+.tabpane{display:none;margin-top:10px}
+.tabpane.on{display:block}
+.socialGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mini{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:10px;font-size:10px}
+.mini b{display:block;margin-bottom:4px;font-family:var(--fontD);font-size:11.5px}
+.partnerBar{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+.pbtn{border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:7px 2px;font-size:9px;font-weight:800;font-family:var(--fontD)}
+.pbtn.on{background:#fff0f3;border-color:var(--accent)}
+.heartline{text-align:center;padding:9px;border-radius:13px;background:#fff0f3;font-size:11px;font-weight:800;font-family:var(--fontD);margin-top:7px}
+.gene{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.gene div{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px;font-size:9.5px}
+.babyCard{margin-top:9px;border:1.5px dashed #e2b85a;background:linear-gradient(160deg,#fff8da,#fff1e6);border-radius:16px;padding:12px;text-align:center}
+.babyScreen{width:170px;height:170px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 34%,#5d4548,#251d25 76%);padding:6px;box-shadow:inset 0 0 18px rgba(0,0,0,.5);position:relative}
+.babyScreen svg{width:100%;height:100%}
+.babyScreen .egg{transform-box:fill-box;transform-origin:center;animation:eggWobble 1.4s ease-in-out infinite}
+@keyframes eggWobble{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.babyScreen .hatch{transform-box:fill-box;transform-origin:center;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+.babyScreen .parentPet{animation:parentBob 1.6s ease-in-out infinite}
+@keyframes parentBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.babyScreen .famHeart{animation:famHeart 1.3s ease-in-out infinite}
+@keyframes famHeart{0%,100%{transform:scale(.8);opacity:.6}50%{transform:scale(1.2);opacity:1}}
+.babyGenes{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:9px}
+.gchip{font-size:9.5px;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 9px}
+.gchip b{font-family:var(--fontD)}
+.gchip .swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+button.grow{width:100%;margin-top:9px;border:1.5px solid #e2b85a;background:#fff2c6;border-radius:14px;padding:11px;font-size:11px;font-weight:800;font-family:var(--fontD);transition:.2s}
+button.grow:active{transform:scale(.97)}
+.evoTree{display:flex;flex-direction:column;align-items:center;gap:7px}
+.evoRoot{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 12px}
+.evoRoot svg,.evoNode svg{width:56px;height:56px}
+.evoLink{color:#d9c7b4;font-size:12px;line-height:1;margin:-1px 0}
+.evoBranches{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;width:100%}
+.evoNode{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 4px;text-align:center;transition:.2s}
+.evoNode .nm{font-family:var(--fontD);font-size:10px;display:block;margin-top:3px}
+.evoNode .tp{font-size:8px;color:var(--muted)}
+.evoNode .st{height:5px;background:#eee5db;border-radius:99px;overflow:hidden;margin-top:5px}
+.evoNode .st i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.evoNode.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);transform:translateY(-2px)}
+.socialStage{display:flex;align-items:flex-end;justify-content:center;position:relative;height:112px;margin-top:7px;overflow:hidden;border:1.5px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff6f0,#fdf0f4)}
+.socialStage svg{width:76px;height:76px}
+.petSlot{transition:transform .55s cubic-bezier(.34,1.56,.64,1);z-index:2}
+.socialStage.snuggle .petSlot.left{transform:translateX(30px)}
+.socialStage.snuggle .petSlot.right{transform:translateX(-30px)}
+.hearts{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
+.heartPop{position:absolute;font-size:16px;opacity:0;animation:heartFloat 1.2s ease-out forwards}
+@keyframes heartFloat{0%{opacity:0;transform:translate(-50%,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-46px) scale(1.15)}}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.stage{height:450px}.shell{transform:scale(.9)}}
+@media(max-width:390px){.shell{transform:scale(.82)}.stage{height:410px}.actions{grid-template-columns:repeat(4,1fr)}.brand{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="deco" style="top:8%;left:5%;font-size:30px">✦</div>
+  <div class="deco" style="top:16%;right:7%;font-size:22px;animation-delay:-2s">✧</div>
+  <div class="deco" style="top:60%;left:3%;font-size:24px;animation-delay:-4s">✿</div>
+  <div class="deco" style="top:78%;right:4%;font-size:26px;animation-delay:-1s">✦</div>
+
+  <header>
+    <div class="brandWrap">
+      <div class="logo" id="logoFace">🥚</div>
+      <div>
+        <div class="brand">THINGY FRIENDS<small>物物朋友 · 盲盒蛋 × 养成 × 双亲繁殖 × 实时感知</small></div>
+      </div>
+    </div>
+    <div class="badge" id="secure">检测环境…</div>
+  </header>
+
+  <div class="card charbar">
+    <button class="cbtn on" data-c="toast"><span class="emo">🍞</span>麦啰 · 烘焙屋</button>
+    <button class="cbtn" data-c="cup"><span class="emo">☕️</span>咕杯 · 咖啡屋</button>
+    <button class="cbtn" data-c="camera"><span class="emo">📷</span>咔米 · 暗箱屋</button>
+    <button class="cbtn" data-c="milk"><span class="emo">🍓</span>莓噜 · 奶盒屋</button>
+  </div>
+
+  <div class="grid">
+    <section class="card hero">
+      <div class="titleRow">
+        <div>
+          <div class="kicker" id="kicker"></div>
+          <h1 id="name"></h1>
+          <div class="tiny">先开一颗盲盒蛋，再把它养大</div>
+        </div>
+        <div class="badge" id="phaseBadge"></div>
+      </div>
+
+      <div class="stage">
+        <div class="shell" id="shell">
+          <div class="ring"></div>
+          <div class="shellTab"></div>
+          <div class="shellBody"><div class="faceplate"><i></i><i></i></div></div>
+          <div class="screenFrame">
+            <div class="screen" id="screen">
+              <div class="topStatus"><span class="bat" id="batTop">🔋</span><span class="bat" id="famTop">❤️</span></div>
+              <div class="life" id="life"></div>
+              <div class="spark" id="spark"></div>
+              <div class="bubble" id="bubble"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="identity"><b id="title"></b><p id="desc"></p></div>
+      <button class="grow" id="viewBtn" style="display:none;max-width:220px;margin:10px auto 0">🍼 查看宝宝</button>
+      <div class="stats">
+        <div class="pill">形态 <b id="variant"></b></div>
+        <div class="pill">成长 <b id="growth"></b>%</div>
+        <div class="pill">熟悉度 <b id="fam"></b>%</div>
+        <div class="pill">性格 <b id="personality"></b></div>
+        <div class="pill">关系 <b id="relation"></b></div>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="card panel">
+        <h3>📱 实机感知 / 互动</h3>
+        <button class="primary" id="sensorBtn">启用 iPhone 运动传感器</button>
+        <div class="note" id="msg">开启后：摇晃会晕、跑步会慌、眼球会跟着手机方向转。</div>
+        <div class="actions" style="margin-top:10px">
+          <button class="act" data-a="walk"><span>🚶</span>走路</button>
+          <button class="act" data-a="run"><span>🏃</span>跑步</button>
+          <button class="act" data-a="shake"><span>🫨</span>猛摇</button>
+          <button class="act" data-a="pet"><span>🫳</span>摸摸</button>
+          <button class="act" data-a="talk"><span>💬</span>说话</button>
+          <button class="act" data-a="idle"><span>💤</span>冷落</button>
+          <button class="act" data-a="feed"><span>🔌</span>吃电</button>
+          <button class="act" data-a="drain"><span>🪫</span>掉电</button>
+          <button class="act" data-a="lift"><span>🙌</span>举高高</button>
+          <button class="act" data-a="tickle"><span>🪶</span>挠痒</button>
+          <button class="act" data-a="flip"><span>🙃</span>倒挂</button>
+          <button class="act" data-a="play"><span>🎲</span>陪玩</button>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <h3>🥚 盲盒 · 10 阶段成长</h3>
+        <div class="progress"><div class="prow"><span>成长</span><div class="bar"><div class="fill" id="growthBar"></div></div><b id="growthN"></b></div></div>
+        <div class="progress"><div class="prow"><span>熟悉度</span><div class="bar"><div class="fill" id="famBar"></div></div><b id="famN"></b></div></div>
+        <div class="stages" id="stages"></div>
+        <button class="grow" id="growBtn">🥚 开蛋（盲盒）</button>
+      </section>
+
+      <section class="card panel">
+        <h3>🧬 宠物世界</h3>
+        <div class="tabs">
+          <button class="tab on" data-tab="unlock">解锁</button>
+          <button class="tab" data-tab="social">社交</button>
+          <button class="tab" data-tab="gene">基因/宝宝</button>
+          <button class="tab" data-tab="evo">进化树</button>
+        </div>
+        <div class="tabpane on" id="unlock"><div class="mini"><b>互动会随成长解锁</b><div id="unlockText"></div></div></div>
+        <div class="tabpane" id="social">
+          <div class="socialGrid">
+            <div class="mini"><b>我的宠物</b><span id="minePet"></span></div>
+            <div class="mini"><b>对方宠物</b><span id="partnerPet"></span></div>
+          </div>
+          <div class="socialStage" id="socialStage">
+            <div class="petSlot left" id="petMine"></div>
+            <div class="hearts" id="hearts"></div>
+            <div class="petSlot right" id="petOther"></div>
+          </div>
+          <div class="heartline" id="loveLine"></div>
+          <div class="note">👥 换对象（点选物种，随机形态）：</div>
+          <div class="partnerBar" id="partnerBar"></div>
+          <button class="grow" id="meetBtn">让两只宠物见面一次</button>
+        </div>
+        <div class="tabpane" id="gene">
+          <div class="gene" id="geneGrid"></div>
+          <div class="note" id="comboNote"></div>
+          <button class="grow" id="babyBtn">和对方宠物生宝宝</button>
+          <div class="babyCard" id="babyCard">
+            <div class="babyScreen" id="babyScreen"></div>
+            <div class="babyGenes" id="babyGenes"></div>
+            <div class="note" id="babyNote">宝宝需要两只宠物共同孕育，并继承双方基因与性格。</div>
+          </div>
+        </div>
+        <div class="tabpane" id="evo">
+          <div class="evoTree" id="evoTree"></div>
+          <div class="note">性格由行为决定：走路→活力·探险，跑步→活力，摸摸→黏人，猛摇→顽皮，冷落→佛系。</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---------- 盲盒形态 ---------- */
+const VARIANTS={
+  toast:[
+    {n:"原味",r:"普通",w:36,c:"#e8a15c",c2:"#f3cf88",acc:"#c97f4c"},
+    {n:"焦糖",r:"普通",w:22,c:"#c9804e",c2:"#f3cf88",acc:"#b3541e"},
+    {n:"抹茶",r:"稀有",w:14,c:"#9bc98a",c2:"#d9efc9",acc:"#6fae95"},
+    {n:"草莓",r:"稀有",w:12,c:"#f3a9c0",c2:"#fce4ec",acc:"#e790ad"},
+    {n:"蓝莓",r:"稀有",w:10,c:"#9b8fd0",c2:"#e3def7",acc:"#6f63b0"},
+    {n:"可可",r:"隐藏",w:6,c:"#8a5a3a",c2:"#c99a6a",acc:"#5e4035"},
+    {n:"彩虹",r:"传说",w:3,c:"#ffd166",c2:"#fff6d6",acc:"#ff9f43"}
+  ],
+  cup:[
+    {n:"美式",r:"普通",w:34,c:"#6fb097",c2:"#d5efe6",acc:"#4a3028"},
+    {n:"抹茶拿铁",r:"普通",w:22,c:"#8fc4a0",c2:"#e6f3e4",acc:"#5e8a72"},
+    {n:"焦糖玛奇朵",r:"稀有",w:14,c:"#b98a6a",c2:"#f2ead9",acc:"#8a5a3a"},
+    {n:"蓝莓",r:"稀有",w:12,c:"#8d84b5",c2:"#d9d4ef",acc:"#5f5787"},
+    {n:"草莓奶盖",r:"稀有",w:10,c:"#f3a9c0",c2:"#fff0f4",acc:"#e790ad"},
+    {n:"黑咖啡",r:"隐藏",w:8,c:"#3a2a22",c2:"#5e4035",acc:"#2b1f1a"},
+    {n:"星光冷萃",r:"传说",w:3,c:"#3a2a4a",c2:"#8fd3f0",acc:"#c9b2ff"}
+  ],
+  camera:[
+    {n:"经典黑",r:"普通",w:32,c:"#5f5787",c2:"#8d84b5",acc:"#3a3554"},
+    {n:"奶油白",r:"普通",w:22,c:"#e8dcc8",c2:"#fff8ee",acc:"#c9b89a"},
+    {n:"薄荷绿",r:"稀有",w:14,c:"#9bc98a",c2:"#d9efc9",acc:"#6fae95"},
+    {n:"樱花粉",r:"稀有",w:12,c:"#f3a9c0",c2:"#fce4ec",acc:"#e790ad"},
+    {n:"柠檬黄",r:"稀有",w:10,c:"#f3e08a",c2:"#fff6d6",acc:"#e0c060"},
+    {n:"夜视",r:"隐藏",w:10,c:"#1b1b2a",c2:"#3a3a55",acc:"#00e5a0"},
+    {n:"极光",r:"传说",w:3,c:"#2b2b3a",c2:"#8fd3f0",acc:"#a8d8b0"}
+  ],
+  milk:[
+    {n:"原味奶",r:"普通",w:34,c:"#f3b8cc",c2:"#fce4ec",acc:"#e790ad"},
+    {n:"香蕉奶",r:"普通",w:22,c:"#f3e08a",c2:"#fff6d6",acc:"#e0c060"},
+    {n:"蓝莓奶",r:"稀有",w:14,c:"#9b8fd0",c2:"#e3def7",acc:"#6f63b0"},
+    {n:"蜜瓜奶",r:"稀有",w:12,c:"#a8d8b0",c2:"#e6f5e8",acc:"#6fae95"},
+    {n:"蜜桃奶",r:"稀有",w:10,c:"#f7c4a0",c2:"#fff0e6",acc:"#e89a6a"},
+    {n:"彩虹奶",r:"隐藏",w:8,c:"#f3a9c0",c2:"#fff6d6",acc:"#8fd3f0"},
+    {n:"星尘奶",r:"传说",w:3,c:"#d9d4ef",c2:"#fff6d6",acc:"#c9b2ff"}
+  ]
+};
+function weightedPick(arr){const t=arr.reduce((s,v)=>s+v.w,0);let r=Math.random()*t;for(const v of arr){if((r-=v.w)<0)return v;}return arr[0];}
+
+const SPECIES={
+  toast:{en:"MELLO",cn:"麦啰",kicker:"BAKERY HOME · 001",shell1:"#e8a15c",shell2:"#c97f4c",shell3:"#f3cf88",emo:"🍞",feature:"黄油",featureKey:"Butter",
+    stages:["盲盒蛋","破壳","幼体","成长期Ⅰ","成长期Ⅱ","成长期Ⅲ","成年","特征觉醒","性格成形","进化分支"],
+    talks:{low:["你……是谁？","这里是哪里呀？","你会一直带着我吗？","我好像刚醒过来……","外面是什么声音呀？","我们……还不算认识吧。"],mid:["你回来啦。","今天出去玩吗？","摸一下也不是不行。","我今天有好好待着哦。","你今天看起来挺忙的。","那个……能多陪我一会吗？"],high:["哟，终于想起我了？","今天这点步数，你认真的？","别摸了别摸了……再摸一下。","今天去哪浪了？从实招来。","我等你一天了都。","要不要比赛谁先到家？"],savage:["哥们，今天就这点运动量？","你是不是背着我养别的了？","我都熟成这样了，还装不认识？","厕所是你今天最远的旅行吧。","再躺下去我就申请换主人了。","行，你忙，我继续在包上发光发热。"]},
+    petted:{shy:["你、你干嘛呀…","我们还没那么熟……"],warm:["摸上瘾了是吧？","再摸就把我摸秃了。","嘿嘿，多摸两下。","你的手好暖和。","摸这里，这里舒服。"]},
+    play:["来追我呀！","猜猜我藏哪了？","一起跳个舞！","你输了要请我吃电哦。"]},
+  cup:{en:"MUGU",cn:"咕杯",kicker:"COFFEE HOME · 002",shell1:"#9fd0bd",shell2:"#6fb097",shell3:"#d5efe6",emo:"☕️",feature:"拉花",featureKey:"Foam",
+    stages:["盲盒蛋","破壳","幼体","成长期Ⅰ","成长期Ⅱ","成长期Ⅲ","成年","特征觉醒","性格成形","进化分支"],
+    talks:{low:["杯子里怎么空空的…","你是店员吗？","可以不要晃太快吗？","这里好安静……","我的咖啡豆还没到货吗？","你……会给我续杯吗？"],mid:["今天要续杯吗？","你又来了。","摸杯沿可以。","今天的浓度刚好。","要不要来一杯手冲？","你看起来需要咖啡因。"],high:["哟，咖啡搭子。","今天精神不太行啊。","再熬夜我可不陪你。","这杯我请你，下次你请我。","你今天的黑眼圈赶上我了。","续杯续命，老规矩？"],savage:["不是吧，又熬夜？","你这作息比我咖啡还黑。","我建议你先给自己充个电。","再喝下去，你晚上又睡不着。","你血管里流的怕是浓缩咖啡。","别晃我，再晃奶泡全塌了。"]},
+    petted:{shy:["别碰杯沿……会烫的。","我还没准备好。"],warm:["摸杯沿可以，别晃。","你手温刚好，来杯热的？","再摸，奶泡要开心得冒泡了。","别光摸，续杯！"]},
+    play:["要不要来杯拉花比赛？","我数豆子你猜数。","来闻闻今天的新豆子。","你帮我转杯，我晕给你看。"]},
+  camera:{en:"CAMI",cn:"咔米",kicker:"DARKROOM HOME · 003",shell1:"#8d84b5",shell2:"#5f5787",shell3:"#c9c3e4",emo:"📷",feature:"镜头",featureKey:"Lens",
+    stages:["盲盒蛋","破壳","幼体","成长期Ⅰ","成长期Ⅱ","成长期Ⅲ","成年","特征觉醒","性格成形","进化分支"],
+    talks:{low:["谁开灯了？","这里好暗。","你是摄影师吗？","我还没完全显影……","别靠太近，我害羞。","快门声……是你按的吗？"],mid:["今天拍什么？","我看到你啦。","别戳镜头。","光还不错，可以出片。","记得擦镜头。","你构图进步了没？"],high:["构图一般，再来。","今天光挺烂的。","你拍糊了别赖我。","黄金时刻要到了，走不走？","这张能发朋友圈。","让我看看你拍的啥。"],savage:["这张也敢留？","你今天是对焦对到月球了？","别看我，先看你的快门。","糊成这样，删了吧。","你的白平衡在报复社会。","拍立得都比你会抓拍。"]},
+    petted:{shy:["别戳镜头！","我害羞……还没显影完。"],warm:["别摸快门，摸我。","构图不错，手再稳点。","摸一下，我帮你打光。","你的手好上镜。"]},
+    play:["来拍一套连拍！","你摆动作我抓拍。","猜猜我刚拍了什么。","比比谁对焦快！"]},
+  milk:{en:"BERRI",cn:"莓噜",kicker:"MILK HOME · 004",shell1:"#f3b8cc",shell2:"#e790ad",shell3:"#fce4ec",emo:"🍓",feature:"草莓顶",featureKey:"Straw",
+    stages:["盲盒蛋","破壳","幼体","成长期Ⅰ","成长期Ⅱ","成长期Ⅲ","成年","特征觉醒","性格成形","进化分支"],
+    talks:{low:["你是谁呀…","这里甜甜的。","不要突然摇我。","我还有点怕生……","草莓……掉进来了吗？","你会好好对我吗？"],mid:["今天也带我嘛。","可以摸一下。","我有点想你。","今天心情草莓味。","你身上有阳光的味道。","不许只摸一下下。"],high:["你今天怎么这么晚？","再不摸我我要闹了。","哼，勉强原谅你。","抱抱，就一下。","你都一整天没理我了。","我数了，你摸了三次。"],savage:["你今天是不是忘了我？","又想靠摸两下蒙混过关？","行吧，谁让我认识你这么久。","再冷落我，我就……自己长草莓。","你以为哄两句我就消气啦？","算了，谁让你是我的。"]},
+    petted:{shy:["不要突然摸我……","我还有点怕生。"],warm:["再摸一下，就一下。","你最会摸我了。","摸完要负责哦。","哼哼，勉强原谅你。"]},
+    play:["来陪我转圈圈！","猜猜我是什么口味？","一起晃出奶泡！","你追我，追到就亲一下。"]}
+};
+
+const ARCH=[
+  {key:"活力",stat:"energy",emoji:"🔥",color:"#ffd166",mood:"excited"},
+  {key:"黏人",stat:"cling",emoji:"💕",color:"#ff9fb4",mood:"love"},
+  {key:"顽皮",stat:"mischief",emoji:"😏",color:"#c9b2ff",mood:"naughty"},
+  {key:"佛系",stat:"calm",emoji:"🍃",color:"#a8d8b0",mood:"sleepy"},
+  {key:"探险",stat:"explore",emoji:"🧭",color:"#8fd3f0",mood:"surprised"}
+];
+const TRAITS=["Curious","Calm","Observant","Clingy","Naughty","Energetic","Shy","Playful","Bold","Dreamy","Sassy","Loyal"];
+const GENE_MOOD={Curious:"happy",Calm:"sleepy",Observant:"happy",Clingy:"love",Naughty:"naughty",Energetic:"excited",Shy:"shy",Playful:"happy",Bold:"naughty",Dreamy:"sleepy",Sassy:"naughty",Loyal:"love"};
+const EARS=["point","round","fluffy","none"];
+const EYES=["round","star","heart","droopy"];
+const PATTERNS=["none","dots","stripes","shine","sprinkle","gradient","heart","star"];
+const SIZES=["tiny","small","medium","large"];
+const SHINES=["glossy","matte"];
+
+const state={char:"toast",growth:0,fam:4,energy:30,cling:30,mischief:16,calm:20,explore:12,battery:76,love:6,meet:0,hatched:false,variant:null,genes:null,faceMood:null,cracking:0,baby:null,view:'pet'};
+const partner={char:"milk",variant:VARIANTS.milk[0],genes:null};
+const d=()=>SPECIES[state.char];
+const ph=()=>state.hatched?Math.min(9,Math.floor(state.growth/10)):0;
+const relation=()=>state.fam<15?"陌生":state.fam<35?"认识":state.fam<55?"熟人":state.fam<75?"好朋友":state.fam<90?"死党":"老搭子";
+function arch(){
+  if(ph()<8)return{key:"未成形",emoji:"🌱",color:"#d9c7b4",mood:"happy",sub:""};
+  const a=ARCH.map(x=>[x.key,x.stat,state[x.stat],x.emoji,x.color,x.mood]);
+  a.sort((x,y)=>y[2]-x[2]);
+  const sub=a[1][0];
+  return{key:a[0][0],stat:a[0][1],emoji:a[0][3],color:a[0][4],mood:a[0][5],sub};
+}
+function myPal(){const v=state.variant;return v?{c:v.c,c2:v.c2,acc:v.acc}:{c:d().shell2,c2:d().shell3,acc:d().shell1};}
+function partnerPal(){const v=partner.variant;return {c:v.c,c2:v.c2,acc:v.acc};}
+let lastTalk='';
+function talkLine(){
+  const p=d().talks,a=state.fam<25?p.low:state.fam<55?p.mid:state.fam<85?p.high:p.savage;
+  let t=pick(a),guard=0;
+  while(t===lastTalk&&a.length>1&&guard++<6)t=pick(a);
+  lastTalk=t;
+  if(state.fam>55&&arch().key==="顽皮")t+=" 😏";
+  if(state.fam>55&&arch().key==="黏人"&&Math.random()>.5)t+=" ♥";
+  return t;
+}
+function say(t,ms=2000){const e=$("#bubble");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),ms);}
+let faceTimer=null;
+function setFace(mood,ms=1500){
+  state.faceMood=mood;clearTimeout(faceTimer);
+  faceTimer=setTimeout(()=>{state.faceMood=null;renderLife();},ms);
+  renderLife();
+}
+
+/* ---------- 表情 ---------- */
+function teeth(c,y,half,n){const w=(half*2)/n;let p=`M${c-half} ${y}`;for(let i=0;i<n;i++)p+=` L${c-half+w*i+w*0.5} ${y+8} L${c-half+w*(i+1)} ${y}`;return `<path d="${p}" fill="#fff"/>`;}
+function starPath(cx,cy,r){return `<path d="M${cx} ${cy-r} L${cx+r*0.3} ${cy-r*0.3} L${cx+r} ${cy} L${cx+r*0.3} ${cy+r*0.3} L${cx} ${cy+r} L${cx-r*0.3} ${cy+r*0.3} L${cx-r} ${cy} L${cx-r*0.3} ${cy-r*0.3} Z"/>`;}
+function heartPath(cx,cy){return `<path d="M${cx} ${cy+7} C${cx-11} ${cy-4} ${cx-4} ${cy-13} ${cx} ${cy-2} C${cx+4} ${cy-13} ${cx+11} ${cy-4} ${cx} ${cy+7}"/>`;}
+function roundEyes(lx,rx,ey,r,ec){return `<ellipse class="eye" cx="${lx}" cy="${ey}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${lx+r*0.34}" cy="${ey-r*0.36}" r="${r*0.3}" fill="#fff"/><ellipse class="eye" cx="${rx}" cy="${ey}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${rx+r*0.34}" cy="${ey-r*0.36}" r="${r*0.3}" fill="#fff"/>`;}
+function closedEyes(lx,rx,ey,r,ec){return `<path d="M${lx-r} ${ey} Q${lx} ${ey+8} ${lx+r} ${ey}" stroke="${ec}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M${rx-r} ${ey} Q${rx} ${ey+8} ${rx+r} ${ey}" stroke="${ec}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;}
+function droopyEyes(lx,rx,ey,r,ec){return `<path d="M${lx-r} ${ey} Q${lx} ${ey+6} ${lx+r} ${ey}" stroke="${ec}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M${lx-r} ${ey+5} L${lx+r} ${ey+5}" stroke="${ec}" stroke-width="2.4" stroke-linecap="round"/><path d="M${rx-r} ${ey} Q${rx} ${ey+6} ${rx+r} ${ey}" stroke="${ec}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M${rx-r} ${ey+5} L${rx+r} ${ey+5}" stroke="${ec}" stroke-width="2.4" stroke-linecap="round"/>`;}
+function eyesFor(lx,rx,ey,r,ec,mood,eyeStyle){
+  if(mood==='sleepy')return closedEyes(lx,rx,ey,r,ec);
+  if(mood==='dizzy')return `<g stroke="${ec}" stroke-width="3.4" stroke-linecap="round"><path d="M${lx-r} ${ey-r} L${lx+r} ${ey+r}"/><path d="M${lx+r} ${ey-r} L${lx-r} ${ey+r}"/><path d="M${rx-r} ${ey-r} L${rx+r} ${ey+r}"/><path d="M${rx+r} ${ey-r} L${rx-r} ${ey+r}"/></g>`;
+  if(mood==='love'||eyeStyle==='heart')return `<g fill="#ef6d91">${heartPath(lx,ey)}${heartPath(rx,ey)}</g>`;
+  if(mood==='excited'||eyeStyle==='star')return `<g fill="${ec}">${starPath(lx,ey,r)}${starPath(rx,ey,r)}</g>`;
+  if(mood==='sad'||eyeStyle==='droopy')return droopyEyes(lx,rx,ey,r,ec);
+  return roundEyes(lx,rx,ey,r,ec);
+}
+function face(o={}){
+  const c=120,eyeY=o.eyeY!=null?o.eyeY:110,gap=o.gap!=null?o.gap:46,r=o.r!=null?o.r:11,ec=o.ec||'#3a2b27',mouthY=o.mouthY!=null?o.mouthY:132,mood=o.mood||'happy',blush=o.blush!==false,eyeStyle=o.eye||'round';
+  const lx=c-gap/2,rx=c+gap/2;
+  const eyes=eyesFor(lx,rx,eyeY,r,ec,mood,eyeStyle);
+  let brow='';
+  if(mood==='naughty')brow=`<path d="M${lx-r} ${eyeY-r-5} L${lx+r} ${eyeY-r-8}" stroke="${ec}" stroke-width="3" stroke-linecap="round"/><path d="M${rx-r} ${eyeY-r-8} L${rx+r} ${eyeY-r-5}" stroke="${ec}" stroke-width="3" stroke-linecap="round"/>`;
+  let mouth='';
+  if(mood==='sleepy')mouth=`<path d="M${c-7} ${mouthY} Q${c} ${mouthY+5} ${c+7} ${mouthY}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if(mood==='surprised')mouth=`<ellipse cx="${c}" cy="${mouthY+2}" rx="6.5" ry="9.5" fill="#5a2f34"/>`;
+  else if(mood==='love')mouth=`<path d="M${c-10} ${mouthY} Q${c} ${mouthY+11} ${c+10} ${mouthY}" stroke="#b3576d" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if(mood==='dizzy')mouth=`<path d="M${c-8} ${mouthY+3} Q${c} ${mouthY-5} ${c+8} ${mouthY+3}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if(mood==='sad')mouth=`<path d="M${c-9} ${mouthY+4} Q${c} ${mouthY-5} ${c+9} ${mouthY+4}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if(mood==='excited')mouth=`<path d="M${c-24} ${mouthY-2} Q${c} ${mouthY+22} ${c+24} ${mouthY-2} Z" fill="#6b3538"/>${teeth(c,mouthY-2,24,8)}`;
+  else mouth=`<path d="M${c-24} ${mouthY} Q${c} ${mouthY+18} ${c+24} ${mouthY} Z" fill="#6b3538"/>${teeth(c,mouthY,24,8)}<path d="M${c-24} ${mouthY} Q${c} ${mouthY+18} ${c+24} ${mouthY}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  const bl=blush?`<circle cx="${lx-r-7}" cy="${eyeY+11}" r="7" fill="#ff9fb4" opacity=".5"/><circle cx="${rx+r+7}" cy="${eyeY+11}" r="7" fill="#ff9fb4" opacity=".5"/>`:'';
+  const shyMark=(mood==='shy')?`<g stroke="#e07a90" stroke-width="2" opacity=".7"><path d="M${lx-6} ${eyeY-6} L${lx-11} ${eyeY-11}"/><path d="M${rx+6} ${eyeY-6} L${rx+11} ${eyeY-11}"/></g>`:'';
+  return `<g>${brow}<g class="gaze">${eyes}</g>${mouth}${bl}${shyMark}</g>`;
+}
+function pointedEars(c){return `<path d="M84 96 L70 54 L104 80 Z" fill="${c}"/><path d="M156 96 L170 54 L136 80 Z" fill="${c}"/>`;}
+function roundEarArt(c){return `<circle cx="82" cy="86" r="16" fill="${c}"/><circle cx="158" cy="86" r="16" fill="${c}"/>`;}
+function fluffyEars(c){return `<g fill="${c}"><circle cx="78" cy="80" r="10"/><circle cx="90" cy="74" r="9"/><circle cx="162" cy="80" r="10"/><circle cx="150" cy="74" r="9"/></g>`;}
+
+function creature(ch,mood,pal){
+  pal=pal||{};const f=face({mood});
+  if(ch==='toast'){const c=pal.c||'#c97f4c',c2=pal.c2||'#f3cf88';return `<rect x="60" y="62" width="120" height="122" rx="46" fill="${c}"/><rect x="68" y="70" width="104" height="106" rx="38" fill="${c2}"/>${f}`;}
+  if(ch==='cup'){const c=pal.c||'#6fb097',c2=pal.c2||'#d5efe6';return `<path d="M68 78 H172 L162 176 Q120 192 78 176 Z" fill="${c}"/><path d="M70 88 H170 L161 168 Q120 182 80 168 Z" fill="${c2}"/><path d="M170 90 h13 a11 11 0 0 1 0 24 h-13" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round"/>${f}`;}
+  if(ch==='camera'){const c=pal.c||'#5f5787',c2=pal.c2||'#8d84b5',acc=pal.acc||'#e8a15c';return `<rect x="56" y="72" width="128" height="104" rx="28" fill="${c}"/><rect x="66" y="82" width="108" height="84" rx="20" fill="${c2}"/><circle cx="120" cy="60" r="10" fill="${acc}" stroke="#c97f4c" stroke-width="3"/>${f}`;}
+  const c=pal.c||'#e790ad',c2=pal.c2||'#fce4ec';return `<rect x="72" y="64" width="96" height="128" rx="22" fill="${c}"/><rect x="80" y="72" width="80" height="112" rx="16" fill="${c2}"/>${f}`;
+}
+function latteArt(){return `<g fill="none" stroke="#f6e3c0" stroke-width="3.5" stroke-linecap="round"><path d="M120 100 C112 96 106 90 106 84 C114 84 119 90 120 96"/><path d="M120 100 C128 96 134 90 134 84 C126 84 121 90 120 96"/><path d="M120 100 L120 80"/></g>`;}
+function signatureFeature(ch){if(ch==='toast')return `<rect x="88" y="50" width="66" height="26" rx="13" fill="#ffd75e" transform="rotate(-5 121 63)"/><path d="M98 52 Q104 45 110 52" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`;if(ch==='cup')return latteArt();if(ch==='camera')return `<circle cx="170" cy="96" r="18" fill="#8fd3f0" stroke="#5f9fbf" stroke-width="4"/><circle cx="170" cy="96" r="7" fill="#2b5f7a"/><path d="M158 84 a14 14 0 0 1 4 -8" stroke="#fff" stroke-width="2" fill="none"/>`;return `<circle cx="120" cy="46" r="16" fill="#ef6f8d"/><path d="M120 30 q-4 8 0 12 q4 -4 0 -12" fill="#5a9e5a"/>`;}
+function sparkle(cx,cy,sz,c="#fff"){return `<path d="M${cx} ${cy-sz} Q${cx} ${cy} ${cx+sz} ${cy} Q${cx} ${cy} ${cx} ${cy+sz} Q${cx} ${cy} ${cx-sz} ${cy} Q${cx} ${cy} ${cx} ${cy-sz} Z" fill="${c}"/>`;}
+function scaleG(g,s){return s<1?`<g transform="translate(120 120) scale(${s}) translate(-120 -120)">${g}</g>`:g;}
+
+function eggArt(level){
+  const base=`<path d="M120 52 C154 52 168 82 168 110 C168 156 144 188 120 188 C96 188 72 156 72 110 C72 82 86 52 120 52 Z" fill="#fff6e8" stroke="#e8c9a0" stroke-width="5"/>`;
+  if(!level)return `<g>${base}<text x="120" y="134" text-anchor="middle" font-size="46" fill="#e0c39a">?</text><circle cx="92" cy="90" r="5" fill="#ffd75e" opacity=".8"/><circle cx="150" cy="86" r="4" fill="#ffd75e" opacity=".6"/></g>`;
+  const c=level===1
+    ?`<g fill="none" stroke="#b98a5a" stroke-width="3"><path d="M116 66 L104 92 L112 106"/><path d="M124 70 L136 96 L128 112"/></g>`
+    :`<g fill="none" stroke="#b98a5a" stroke-width="3.5"><path d="M116 66 L104 92 L112 106 L100 124"/><path d="M124 70 L136 96 L128 112 L140 130"/><path d="M120 78 L120 98 L112 112"/><path d="M104 92 L96 102"/><path d="M136 96 L144 102"/></g>`;
+  return `<g class="eggShake">${base}${c}</g>`;
+}
+function shellBits(){return `<path d="M120 84 L88 122 L120 132 Z" fill="#f6e6d0"/><path d="M120 84 L152 122 L120 132 Z" fill="#fff3e0"/><path d="M120 80 L120 60" stroke="#e8c9a0" stroke-width="3"/>`;}
+
+function rarityGlow(v){
+  if(!v)return '';
+  if(v.r==="传说")return `<circle class="aura" cx="120" cy="120" r="106" fill="none" stroke="#ffd166" stroke-width="3.5"/>${sparkle(40,52,7,"#ffd166")}${sparkle(200,60,6,"#ffd166")}${sparkle(48,184,5,"#ff9f43")}${sparkle(198,184,5,"#ff9f43")}`;
+  if(v.r==="隐藏")return `<circle class="aura" cx="120" cy="120" r="104" fill="none" stroke="#b06ef0" stroke-width="3"/>${sparkle(44,52,6,"#b06ef0")}${sparkle(196,60,5,"#b06ef0")}`;
+  if(v.r==="稀有")return `${sparkle(48,58,5,"#ff9f43")}${sparkle(196,66,4,"#ff9f43")}`;
+  return '';
+}
+function stageSVG(){
+  if(!state.hatched)return `<svg viewBox="0 0 240 240">${eggArt(state.cracking)}</svg>`;
+  const ch=state.char,v=state.variant,pal={c:v.c,c2:v.c2,acc:v.acc};
+  const a=arch(),p=ph();
+  if(state.baby&&state.view==='baby'){
+    return `<svg viewBox="0 0 240 240"><g class="parentPet" transform="translate(-34 -28)">${scaleG(creature(ch,'love',pal),0.42)}</g><g class="hatch">${scaleG(babyInner(state.baby),0.66)}</g><text class="famHeart" x="150" y="124" font-size="22">❤️</text></svg>`;
+  }
+  const mood=state.faceMood||a.mood;
+  if(p===1)return `<svg viewBox="0 0 240 240">${shellBits()}${scaleG(creature(ch,'excited',pal),0.5)}</svg>`;
+  const scale=[0.58,0.7,0.8,0.9,1][Math.max(0,p-2)]||1;
+  let inner=scaleG(creature(ch,mood,pal),scale);
+  inner+=rarityGlow(v);
+  if(p>=7)inner+=signatureFeature(ch);
+  if(p>=8)inner=`<circle cx="120" cy="120" r="112" fill="${a.color}" opacity=".15"/><circle class="aura" cx="120" cy="120" r="100" fill="none" stroke="${a.color}" stroke-width="2.5"/>${inner}`;
+  if(p===9)inner+=`${sparkle(40,60,7,a.color)}${sparkle(200,52,5,a.color)}${sparkle(40,184,6,a.color)}${sparkle(204,184,6,a.color)}`;
+  return `<svg viewBox="0 0 240 240">${inner}</svg>`;
+}
+
+/* ---------- 基因 & 宝宝 ---------- */
+function geneOf(ch,variant){
+  return {species:ch,variantName:variant.n,rarity:variant.r,c:variant.c,c2:variant.c2,acc:variant.acc,feature:SPECIES[ch].featureKey,ear:pick(EARS),eye:pick(EYES),pattern:pick(PATTERNS),size:pick(SIZES),shine:pick(SHINES),trait:pick(TRAITS)};
+}
+function mergeGene(a,b){const p=(x,y)=>Math.random()>.5?x:y;return {species:p(a.species,b.species),variantName:"混血宝宝",rarity:"混血",c:p(a.c,b.c),c2:p(a.c2,b.c2),acc:p(a.acc,b.acc),feature:p(a.feature,b.feature),ear:p(a.ear,b.ear),eye:p(a.eye,b.eye),pattern:p(a.pattern,b.pattern),size:p(a.size,b.size),shine:p(a.shine,b.shine),trait:p(a.trait,b.trait)};}
+function bodyShape(type,c,c2){
+  if(type==='toast')return `<rect x="76" y="86" width="88" height="90" rx="40" fill="${c}"/><rect x="85" y="95" width="70" height="72" rx="32" fill="${c2}" opacity=".55"/>`;
+  if(type==='cup')return `<path d="M80 90 H160 L153 176 Q120 190 87 176 Z" fill="${c}"/><path d="M160 94 h13 a10 10 0 0 1 0 22 h-13" fill="none" stroke="${c2}" stroke-width="7"/>`;
+  if(type==='camera')return `<rect x="64" y="88" width="112" height="92" rx="24" fill="${c}"/><rect x="77" y="101" width="86" height="66" rx="14" fill="${c2}"/>`;
+  return `<rect x="82" y="78" width="76" height="114" rx="20" fill="${c}"/><path d="M106 60 L120 60 L116 78 L110 78 Z" fill="${c2}"/>`;
+}
+function featureArt(f){
+  if(f==='Butter')return `<rect x="98" y="74" width="44" height="20" rx="9" fill="#ffd75e" transform="rotate(-8 120 84)"/>`;
+  if(f==='Foam')return `<g fill="#fff" opacity=".9"><circle cx="96" cy="80" r="7"/><circle cx="110" cy="74" r="9"/><circle cx="126" cy="78" r="7"/><circle cx="140" cy="84" r="5"/></g>`;
+  if(f==='Lens')return `<circle cx="168" cy="98" r="16" fill="#8fd3f0" stroke="#5f9fbf" stroke-width="4"/><circle cx="168" cy="98" r="6" fill="#2b5f7a"/>`;
+  return `<rect x="116" y="54" width="9" height="34" rx="4" fill="#ff7fa5" transform="rotate(8 120 62)"/>`;
+}
+function patternArt(p,c2){
+  if(p==='dots')return `<g fill="${c2}" opacity=".7"><circle cx="90" cy="120" r="3"/><circle cx="150" cy="120" r="3"/><circle cx="120" cy="152" r="3"/></g>`;
+  if(p==='stripes')return `<g stroke="${c2}" stroke-width="4" opacity=".5"><path d="M85 110 L110 110"/><path d="M85 122 L110 122"/><path d="M130 110 L155 110"/><path d="M130 122 L155 122"/></g>`;
+  if(p==='shine')return `<circle cx="96" cy="100" r="8" fill="#fff" opacity=".5"/>`;
+  if(p==='sprinkle')return `<g fill="${c2}" opacity=".9"><rect x="88" y="110" width="4" height="4" rx="1" transform="rotate(20 90 112)"/><rect x="148" y="116" width="4" height="4" rx="1" transform="rotate(-20 150 118)"/><rect x="120" y="148" width="4" height="4" rx="1"/><rect x="100" y="140" width="3" height="3" rx="1"/></g>`;
+  if(p==='gradient')return `<path d="M82 96 L158 96 L158 158 L82 158 Z" fill="#ffffff" opacity=".12"/><path d="M82 96 L158 158" stroke="#ffffff" stroke-width="3" opacity=".35"/>`;
+  if(p==='heart')return `<g fill="#ff9fb4" opacity=".85"><path d="M94 118 C92 113 96 110 98 113 C100 110 104 113 102 118 L98 123 Z"/><path d="M146 118 C144 113 148 110 150 113 C152 110 156 113 154 118 L150 123 Z"/></g>`;
+  if(p==='star')return `<g fill="#ffd166" opacity=".85"><path d="M104 116 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 Z" transform="scale(.8) translate(24 26)"/></g>`;
+  return '';
+}
+function babyInner(g){
+  const mood=GENE_MOOD[g.trait]||'happy';
+  const ears=g.ear==='point'?pointedEars(g.c):g.ear==='round'?roundEarArt(g.c):g.ear==='fluffy'?fluffyEars(g.c):'';
+  const size=g.size==='large'?1.08:g.size==='small'?0.92:g.size==='tiny'?0.84:1;
+  const gloss=g.shine==='glossy'?`<ellipse cx="100" cy="92" rx="24" ry="15" fill="#fff" opacity=".35"/>`:'';
+  return `<g transform="translate(120 120) scale(${size}) translate(-120 -120)">${ears}${bodyShape(g.species,g.c,g.c2)}${patternArt(g.pattern,g.c2)}${face({mood,eye:g.eye,eyeY:118,gap:46,r:10,mouthY:138})}${featureArt(g.feature)}${gloss}</g>`;
+}
+function babySVG(g){return `<svg viewBox="0 0 240 240">${babyInner(g)}</svg>`;}
+
+function unlockText(){
+  if(!state.hatched)return"一颗盲盒蛋。点「开蛋」看看会开出什么颜色。";
+  const p=ph();
+  if(p<2)return"刚破壳，还很小，只会看着你。";
+  if(p<3)return"已解锁：轻触回应。";
+  if(p<4)return"已解锁：摸摸、简单撒娇。";
+  if(p<5)return"已解锁：吐槽与玩笑。";
+  if(p<6)return"已解锁：更多动作回应。";
+  if(p<7)return"已解锁：宠物社交、见面。";
+  if(p<8)return"已解锁：恋爱与关系事件。";
+  if(p<9)return"已解锁：基因与宝宝（需两只宠物）。";
+  return"已解锁：进化分支与稀有事件。";
+}
+
+let lastPhase=null;
+function renderLife(){$("#life").innerHTML=stageSVG();}
+function render(){
+  const x=d(),p=ph(),a=arch(),v=state.variant;
+  const root=document.documentElement.style;
+  root.setProperty('--shell1',x.shell1);root.setProperty('--shell2',x.shell2);root.setProperty('--shell3',x.shell3);
+  $("#logoFace").textContent=state.hatched?x.emo:'🥚';
+  $("#name").textContent=x.en+" "+x.cn;
+  $("#kicker").textContent=x.kicker;
+  const pb=$("#phaseBadge");
+  if(!state.hatched){pb.textContent="🥚 未孵化";pb.className="badge";}
+  else if(v.r==="传说"){pb.textContent="🌟 传说·"+v.n+x.cn;pb.className="badge legend";}
+  else if(v.r==="隐藏"){pb.textContent="💎 隐藏·"+v.n+x.cn;pb.className="badge secret";}
+  else if(v.r==="稀有"){pb.textContent="✨ 稀有·"+v.n+x.cn;pb.className="badge rare";}
+  else{pb.textContent=v.n+x.cn+" · "+x.stages[p];pb.className="badge";}
+  $("#variant").textContent=state.hatched?("🎲 "+v.n+" · "+v.r):"未孵化";
+  $("#title").textContent=state.hatched?x.stages[p]:(x.en+" 的盲盒蛋");
+  $("#desc").textContent=state.hatched?(p<9?"它正按自己的节奏长大，颜色是开蛋时决定的。":"它已成年，性格与关系还会继续变化。"):"蛋壳里藏着一只随机的 "+x.cn+"，颜色和稀有度开出来才知道。";
+  renderLife();
+  $("#growth").textContent=Math.round(state.growth);
+  $("#fam").textContent=Math.round(state.fam);
+  $("#personality").textContent=a.key+(a.sub?("·"+a.sub):"");
+  $("#relation").textContent=relation();
+  $("#viewBtn").style.display=state.baby?'block':'none';
+  $("#viewBtn").textContent=state.view==='baby'?'🐾 查看宠物':'🍼 查看宝宝';
+  $("#batTop").textContent="🔋"+Math.round(state.battery)+"%";
+  $("#famTop").textContent="❤️"+Math.round(state.fam);
+  $("#growthBar").style.width=state.growth+'%';
+  $("#growthN").textContent=Math.round(state.growth);
+  $("#famBar").style.width=state.fam+'%';
+  $("#famN").textContent=Math.round(state.fam);
+  $("#stages").innerHTML=x.stages.map((s,i)=>`<div class="stageChip ${i===p?'on':''}">${s}</div>`).join('');
+  $("#unlockText").textContent=unlockText();
+  $("#minePet").textContent=x.cn+" · "+relation();
+  $("#partnerPet").textContent=SPECIES[partner.char].emo+" "+SPECIES[partner.char].cn+" · "+partner.variant.n;
+  $("#loveLine").textContent="关系："+(state.love<20?"初次见面":state.love<45?"朋友":state.love<70?"暧昧":state.love<90?"恋爱":"老夫老妻")+" · Love "+Math.round(state.love);
+  const gene=state.genes||geneOf(state.char,state.variant||VARIANTS[state.char][0]);
+  $("#geneGrid").innerHTML=[["物种",SPECIES[gene.species].cn],["形态",gene.variantName+" · "+gene.rarity],["特征",gene.feature],["耳朵",gene.ear],["眼睛",gene.eye],["花纹",gene.pattern],["体型",gene.size],["光泽",gene.shine],["性格倾向",gene.trait]].map(([k,val])=>`<div><b>${k}</b><br>${val}</div>`).join('');
+  $("#comboNote").textContent="🎲 组合：宝宝 1,376,256 种；每物种开蛋 344,064 种形态（含稀有度 4 档）";
+  const gb=$("#growBtn");
+  if(!state.hatched){gb.textContent="🥚 开蛋（盲盒）";}
+  else if(p<9){gb.textContent="⚡ 推进一个成长阶段";}
+  else{gb.textContent="已达满级，继续陪伴它";}
+  evoTree();renderSocial();renderPartnerBar();
+  document.querySelectorAll('.cbtn').forEach(b=>b.classList.toggle('on',b.dataset.c===state.char));
+  if(lastPhase!==null&&p!==lastPhase)evolveFX();
+  lastPhase=p;
+}
+function evolveFX(){const s=$("#spark");s.classList.remove('on');void s.offsetWidth;s.classList.add('on');const l=$("#life");l.classList.remove('pop');void l.offsetWidth;l.classList.add('pop');}
+function evoTree(){
+  const pal=myPal(),a=arch();
+  const root=`<svg viewBox="0 0 240 240">${creature(state.char,'happy',pal)}</svg>`;
+  const branches=ARCH.map(b=>{const v=state[b.stat];const act=(a.key===b.key);return `<div class="evoNode ${act?'active':''}"><svg viewBox="0 0 240 240">${creature(state.char,b.mood,pal)}</svg><span class="nm">${b.emoji} ${b.key}</span><span class="tp">${Math.round(v)}</span><div class="st"><i style="width:${Math.min(100,v)}%"></i></div></div>`;}).join('');
+  $("#evoTree").innerHTML=`<div class="evoRoot"><span style="font-family:var(--fontD);font-size:11px;line-height:1.3">${d().cn}<br>${a.emoji} ${a.key}${a.sub?"·"+a.sub:""}</span>${root}</div><div class="evoLink">▼ 性格分化 ▼</div><div class="evoBranches">${branches}</div>`;
+}
+function renderSocial(){
+  $("#petMine").innerHTML=`<svg viewBox="0 0 240 240">${creature(state.char,'happy',myPal())}</svg>`;
+  $("#petOther").innerHTML=`<svg viewBox="0 0 240 240">${creature(partner.char,'happy',partnerPal())}</svg>`;
+  $("#socialStage").classList.toggle('snuggle',state.love>=60);
+}
+function renderPartnerBar(){
+  const chars=["toast","cup","camera","milk"];
+  $("#partnerBar").innerHTML=chars.map(c=>`<button class="pbtn ${c===partner.char?'on':''}" data-p="${c}">${SPECIES[c].emoji} ${SPECIES[c].cn}</button>`).join('');
+  document.querySelectorAll('.pbtn').forEach(b=>b.onclick=()=>{
+    partner.char=b.dataset.p;partner.variant=weightedPick(VARIANTS[partner.char]);partner.genes=null;
+    renderSocial();renderPartnerBar();render();
+  });
+}
+function popHearts(){const h=$("#hearts"),emojis=['❤️','💕','💖','✨'];for(let i=0;i<5;i++){const s=document.createElement('span');s.className='heartPop';s.textContent=pick(emojis);s.style.left=((Math.random()*44)-22)+'px';s.style.animationDelay=(Math.random()*0.4)+'s';h.appendChild(s);setTimeout(()=>s.remove(),1800);}}
+
+/* ---------- 开蛋动画（三段式） ---------- */
+let hatchTimer=null;
+function hatch(){
+  if(state.hatched||state.cracking)return;
+  const targetChar=state.char;
+  state.cracking=1;renderLife();say('蛋在动了……',600);
+  hatchTimer=setTimeout(()=>{
+    if(state.hatched||targetChar!==state.char)return;
+    state.cracking=2;renderLife();
+    hatchTimer=setTimeout(()=>{
+      if(state.hatched||targetChar!==state.char)return;
+      state.cracking=0;
+      state.variant=weightedPick(VARIANTS[state.char]);
+      state.hatched=true;state.growth=12;state.genes=geneOf(state.char,state.variant);
+      const v=state.variant,rar=v.r;
+      evolveFX();
+      say("破壳啦！是一只「"+v.n+d().cn+"」！"+(rar!=="普通"?(" "+rar+"形态！"):""),2600);
+      if(rar!=="普通")setTimeout(()=>say(rar==="隐藏"||rar==="传说"?"💎 "+rar+"款！超稀有！":"✨ "+rar+"款！",1800),1400);
+      render();
+    },700);
+  },600);
+}
+
+function interact(k){
+  if(!state.hatched){
+    if(k==='talk'){say(pick(['（蛋轻轻晃了晃）','里面好像有声音……','先开蛋嘛。','咕噜咕噜……']));return;}
+    if(k==='shake'){say('别摇！蛋会晕的！');return;}
+    say('蛋还在睡觉，先点「开蛋」吧。');return;
+  }
+  if(k==='talk'){say(talkLine());return;}
+  if(k==='pet'){
+    if(ph()<2){setFace('shy');say(pick(d().petted.shy));return;}
+    state.fam=clamp(state.fam+2.5);state.cling=clamp(state.cling+2);
+    setFace('love');say(pick(d().petted.warm));render();return;
+  }
+  if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.explore=clamp(state.explore+0.8);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);setFace('happy');say(ph()<2?'摇摇晃晃地学走路……':pick(['今天去哪儿？','出发出发！','跟你一起走走。','风好舒服呀。']));render();return;}
+  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.explore=clamp(state.explore+1);state.battery=clamp(state.battery-.6);setFace('excited');say(pick(['慢一点！我要飞出去啦！','哇哇哇太快了！','等等我等等我！','你跑步像一阵风！']));render();return;}
+  if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);setFace('dizzy',1800);say(state.char==='milk'?pick(['别摇了！奶泡全糊脸上了！','啊啊啊草莓要飞出去了！']):pick(['晕啦！你故意的是吧！','住手！我头晕！','地震了吗？！']));render();return;}
+  if(k==='idle'){state.fam=clamp(state.fam-.7);state.calm=clamp(state.calm+2);state.mischief=clamp(state.mischief+.5);setFace('sleepy');say(state.fam>55?pick(['哟，终于舍得看我了？','等你等得都快长蘑菇了。']):pick(['今天你好忙呀。','我有点无聊了……']));render();return;}
+  if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);state.calm=clamp(state.calm+1.2);setFace('excited');say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。','充满电，满血复活！']));render();return;}
+  if(k==='drain'){state.battery=clamp(state.battery-25);setFace('sad');say(state.battery<10?'我真的要饿死了……':state.battery<30?'我饿了，给口电吃嘛。':'肚子有点空。');render();return;}
+  if(k==='lift'){state.energy=clamp(state.energy+2);state.explore=clamp(state.explore+1);state.fam=clamp(state.fam+1);setFace('surprised');say(pick(['好高呀——！','再举高一点！','我在飞！']));render();return;}
+  if(k==='tickle'){state.cling=clamp(state.cling+2);state.mischief=clamp(state.mischief+1);setFace('excited');say(pick(['哈哈哈别挠了！','痒死啦！','住手……哈哈哈！']));render();return;}
+  if(k==='flip'){state.mischief=clamp(state.mischief+2);setFace('dizzy',1800);say('世界翻过来了……');render();return;}
+  if(k==='play'){state.explore=clamp(state.explore+2);state.energy=clamp(state.energy+1);state.fam=clamp(state.fam+1);setFace('happy');say(pick(d().play));render();return;}
+}
+
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>interact(b.dataset.a));
+document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
+  clearTimeout(hatchTimer);
+  state.char=b.dataset.c;state.growth=0;state.fam=4;state.love=6;state.hatched=false;state.variant=null;state.genes=null;state.battery=76;state.meet=0;state.cracking=0;state.baby=null;state.view='pet';
+  state.energy=30;state.cling=30;state.mischief=16;state.calm=20;state.explore=12;lastPhase=null;
+  render();say('一颗新的盲盒蛋……');
+});
+$("#screen").onclick=()=>{state.hatched?interact('pet'):hatch();};
+$("#viewBtn").onclick=()=>{state.view=state.view==='baby'?'pet':'baby';render();};
+$("#growBtn").onclick=()=>{
+  if(!state.hatched){hatch();return;}
+  if(ph()<9){state.growth=clamp(state.growth+11);state.fam=clamp(state.fam+6);say('发生变化了：'+d().stages[ph()]+' ✨',2200);}
+  else{state.fam=clamp(state.fam+5);say('身体不再长了，但我们会越来越熟。');}
+  render();
+};
+document.querySelectorAll('button.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('button.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');$("#"+b.dataset.tab).classList.add('on');
+});
+$("#meetBtn").onclick=()=>{
+  if(ph()<7){say('还太小，先长大一点再交朋友。');return;}
+  state.meet++;state.love=clamp(state.love+8+Math.random()*6);
+  popHearts();setFace('love');
+  say(pick(['你是谁呀？','又见面啦！','她来了！快看！','今天可以一起玩吗？']));render();
+};
+$("#babyBtn").onclick=()=>{
+  const gate=state.hatched&&ph()>=9&&state.love>=60;
+  const me=state.genes||geneOf(state.char,state.variant||VARIANTS[state.char][0]);
+  if(!partner.genes)partner.genes=geneOf(partner.char,partner.variant);
+  const mate=partner.genes;
+  const baby=mergeGene(me,mate);
+  const scr=$("#babyScreen"),gen=$("#babyGenes"),note=$("#babyNote");
+  scr.innerHTML='<svg viewBox="0 0 240 240"><g class="egg"><path d="M120 54 C152 54 166 82 166 110 C166 154 143 188 120 188 C97 188 74 154 74 110 C74 82 88 54 120 54 Z" fill="#fff3e0" stroke="#e8c9a0" stroke-width="5"/><path d="M120 70 L98 96 L120 108 L132 92 Z" fill="#f6d8a8"/><path d="M118 94 L108 122 L124 128 L130 104 Z" fill="#fff"/></g></svg>';
+  gen.innerHTML='<span class="gchip">🥚 两颗蛋在结合…</span>';
+  note.textContent=gate?"宝宝继承了双方 "+me.variantName+" 与 "+mate.variantName+" 的基因。":"Demo 预览：条件未完全成熟（需成年且关系≥恋爱），先用当前对象基因演示。";
+  setTimeout(()=>{
+    scr.innerHTML=`<svg viewBox="0 0 240 240">
+      <g class="parentPet" transform="translate(-30 -26)">${scaleG(creature(state.char,'love',myPal()),0.4)}</g>
+      <g class="hatch">${scaleG(babyInner(baby),0.62)}</g>
+      <text class="famHeart" x="150" y="128" font-size="22">❤️</text>
+    </svg>`;
+    gen.innerHTML=`
+      <span class="gchip">物种 <b>${SPECIES[baby.species].cn}</b></span>
+      <span class="gchip">特征 <b>${baby.feature}</b></span>
+      <span class="gchip">耳朵 <b>${baby.ear}</b></span>
+      <span class="gchip">眼睛 <b>${baby.eye}</b></span>
+      <span class="gchip">花纹 <b>${baby.pattern}</b></span>
+      <span class="gchip">体型 <b>${baby.size}</b></span>
+      <span class="gchip">光泽 <b>${baby.shine}</b></span>
+      <span class="gchip">性格 <b>${baby.trait}</b></span>
+      <span class="gchip"><span class="swatch" style="background:${baby.c}"></span><span class="swatch" style="background:${baby.c2}"></span>配色</span>`;
+    if(gate){state.baby=baby;state.view='baby';render();}
+  },1200);
+  say('……我们和对方有宝宝蛋了？！',2300);
+};
+async function enableSensors(){
+  let btn=$("#sensorBtn"),msg=$("#msg");
+  try{
+    let r=[];
+    if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function')r.push(await DeviceMotionEvent.requestPermission());
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')r.push(await DeviceOrientationEvent.requestPermission());
+    if(r.some(x=>x!=='granted'))throw Error('权限未允许');
+    const used=r.length>0;
+    btn.textContent=used?'✓ iPhone IMU 已连接':'✓ 运动传感器已启用';btn.classList.add('ok');
+    msg.textContent=used?'已连接。摇晃会晕、跑步会慌、眼球跟着手机方向转。':'已启用。摇晃会晕、跑步会慌、眼球跟随（桌面端可能无传感器数据）。';
+    let last=0,buf=[],lastGaze=0;
+    window.addEventListener('devicemotion',e=>{
+      let now=Date.now(),a=e.acceleration||{},m=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2);
+      buf.push({t:now,m,x:a.x||0,y:a.y||0});buf=buf.filter(v=>now-v.t<650);
+      if(now-lastGaze>90){
+        const gx=clamp((a.x||0)*1.6,-6,6),gy=clamp((a.y||0)*1.4,-5,5);
+        const life=$("#life");
+        life.style.setProperty('--gx',gx+'px');life.style.setProperty('--gy',gy+'px');
+        lastGaze=now;
+      }
+      if(now-last<500)return;
+      let rms=Math.sqrt(buf.reduce((s,v)=>s+v.m*v.m,0)/(buf.length||1)),rev=0;
+      for(let i=1;i<buf.length;i++)if(Math.sign(buf[i-1].x)!=Math.sign(buf[i].x)&&Math.abs(buf[i-1].x-buf[i].x)>4)rev++;
+      if(rms>5.8&&rev>=4){last=now;interact('shake');}
+      else if(m>1.2&&m<4.8){last=now;interact('walk');}
+    },true);
+  }catch(e){msg.textContent='启用失败：'+e.message+'。请使用 Safari 并允许运动与方向访问。';}
+}
+$("#sensorBtn").onclick=enableSensors;
+$("#secure").textContent=window.isSecureContext?'✓ HTTPS':'⚠ 非 HTTPS';
+render();say('一颗盲盒蛋，点「开蛋」看看里面是谁？',1800);
+</script>
+</body>
+</html>
