@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f6eee4">
+<title>THINGY FRIENDS V0.5 · 物物朋友</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6eee4; --ink:#43342d; --muted:#9a887c; --line:#ecdfd1; --card:#fffdf8;
+  --cream:#fff6ea; --accent:#ff8fab; --accent2:#ffd166; --good:#347860;
+  --shell1:#e8a15c; --shell2:#c97f4c; --shell3:#f3cf88;
+  --shadow:0 24px 60px rgba(88,60,42,.14);
+  --fontD:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",sans-serif;
+  --fontB:"ZCOOL QingKe HuangYou","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:var(--fontB);color:var(--ink)}
+body{
+  background:
+    radial-gradient(circle at 6% -2%,#ffe2ec 0,transparent 30%),
+    radial-gradient(circle at 98% 0%,#fff1bd 0,transparent 28%),
+    radial-gradient(circle at 88% 100%,#e3f3e6 0,transparent 34%),
+    radial-gradient(circle at 4% 96%,#e6ecff 0,transparent 32%),
+    var(--bg);
+  background-attachment:fixed;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:1120px;margin:auto;padding:16px 14px calc(30px + env(safe-area-inset-bottom));position:relative}
+/* floating decor */
+.deco{position:fixed;z-index:0;pointer-events:none;color:#e8c07a;opacity:.55;filter:drop-shadow(0 4px 8px rgba(120,80,40,.15));animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(12deg)}}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:2}
+.brandWrap{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:linear-gradient(145deg,#fff,#f7e6d8);display:grid;place-items:center;box-shadow:0 8px 20px rgba(120,70,40,.16),inset 0 0 0 2px #fff;font-size:30px}
+.brand{font-family:var(--fontD);font-size:24px;font-weight:900;letter-spacing:.02em}
+.brand small{display:block;font-family:var(--fontB);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:.04em;margin-top:1px}
+.badge{font-size:11px;border:1.5px solid var(--line);background:rgba(255,255,255,.75);padding:7px 12px;border-radius:99px;box-shadow:0 4px 12px rgba(120,70,40,.06);backdrop-filter:blur(6px)}
+.card{background:rgba(255,253,248,.92);border:1.5px solid var(--line);border-radius:26px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.charbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;margin-bottom:14px;position:relative;z-index:2}
+.cbtn{border:0;background:transparent;border-radius:18px;padding:10px 6px;font-size:11px;font-weight:800;font-family:var(--fontD);transition:.25s;position:relative}
+.cbtn .emo{display:block;font-size:26px;line-height:1;margin-bottom:3px;filter:drop-shadow(0 3px 4px rgba(120,70,40,.12));transition:.25s}
+.cbtn.on{background:#fff;border:1.5px solid var(--line);box-shadow:0 10px 22px rgba(120,70,40,.14);transform:translateY(-2px)}
+.cbtn.on .emo{transform:scale(1.15) rotate(-6deg)}
+.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:14px;position:relative;z-index:2}
+.hero{padding:22px 22px 18px;overflow:hidden;position:relative}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 12%,rgba(255,255,255,.6),transparent 40%);pointer-events:none}
+.titleRow{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+.kicker{font-size:10px;letter-spacing:.18em;color:var(--muted);font-weight:800;text-transform:uppercase}
+.hero h1{font-family:var(--fontD);font-size:30px;margin:5px 0 3px;line-height:1.1}
+.tiny{font-size:10px;color:var(--muted)}
+.stage{height:486px;display:grid;place-items:center;position:relative}
+/* shell = the physical collectible toy */
+.shell{position:relative;width:330px;height:412px;filter:drop-shadow(0 30px 34px rgba(74,48,32,.28));transition:.35s}
+.ring{position:absolute;z-index:1;left:50%;top:0;transform:translateX(-50%);width:46px;height:52px;border:9px solid #b6a89b;border-bottom:0;border-radius:26px 26px 0 0;box-shadow:inset 0 3px 4px #fff8}
+.ring::after{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfc2b5);box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.tab{position:absolute;z-index:2;left:50%;top:30px;transform:translateX(-50%);width:74px;height:26px;background:linear-gradient(180deg,var(--shell3),var(--shell1));border-radius:12px;box-shadow:0 6px 10px rgba(74,48,32,.18)}
+.shellBody{position:absolute;z-index:3;inset:52px 22px 18px;background:linear-gradient(150deg,var(--shell1),var(--shell2));border-radius:46% 46% 36% 36%/32% 32% 28% 28%;box-shadow:inset -16px -20px 34px rgba(0,0,0,.22),inset 12px 16px 30px rgba(255,255,255,.42),0 2px 0 rgba(255,255,255,.35) inset}
+.shellBody::before{content:"";position:absolute;left:12%;top:5%;width:36%;height:24%;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,0));border-radius:50%;filter:blur(1px)}
+.shellBody::after{content:"";position:absolute;inset:20px;background:linear-gradient(150deg,var(--shell3),transparent 62%);border-radius:42% 42% 30% 30%/30% 30% 26% 26%;opacity:.55}
+.faceplate{position:absolute;z-index:4;left:50%;top:15%;transform:translateX(-50%);width:120px;height:52px;display:flex;justify-content:center;align-items:center;gap:16px}
+.faceplate i{display:block;width:15px;height:20px;border-radius:50% 50% 45% 45%;background:#3a2b27;position:relative}
+.faceplate i::after{content:"";position:absolute;top:3px;left:3px;width:5px;height:5px;border-radius:50%;background:#fff}
+.screenFrame{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-52%);width:250px;height:250px;border-radius:50%;background:linear-gradient(145deg,#5b4a42,#31241e);box-shadow:inset 0 4px 10px rgba(0,0,0,.55),0 8px 18px rgba(0,0,0,.3),0 0 0 8px #46352e,0 0 0 10px rgba(255,255,255,.12);padding:9px}
+.screen{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 34%,#5d4548,#251d25 76%);overflow:hidden;color:#fff;touch-action:manipulation;box-shadow:inset 0 0 26px rgba(0,0,0,.5)}
+.screen::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.16),transparent 42%);pointer-events:none;z-index:7}
+.life{position:absolute;inset:0;display:grid;place-items:center;z-index:4}
+.life svg{width:100%;height:100%;animation:breathe 3.2s ease-in-out infinite}
+.life.pop{animation:pop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03) translateY(-3px)}}
+@keyframes pop{0%{transform:scale(.55);opacity:0}60%{transform:scale(1.14)}100%{transform:scale(1);opacity:1}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+@keyframes blink{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.08)}}
+.aura{transform-box:fill-box;transform-origin:center;animation:auraPulse 2.6s ease-in-out infinite}
+@keyframes auraPulse{0%,100%{transform:scale(.92);opacity:.35}50%{transform:scale(1.05);opacity:.7}}
+.spark{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
+.spark.on{animation:sparkle .9s ease}
+.spark::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 40px 18px #ffd166}
+@keyframes sparkle{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+.topStatus{position:absolute;top:14px;left:20px;right:20px;z-index:8;display:flex;justify-content:space-between;font-size:8.5px;color:#f7ecf2bb;font-family:var(--fontB);letter-spacing:.04em}
+.bubble{position:absolute;left:20px;right:20px;bottom:16px;z-index:8;text-align:center;font-size:11.5px;font-weight:800;line-height:1.35;padding:8px 10px;border-radius:14px;background:rgba(22,16,18,.72);color:#fff;backdrop-filter:blur(4px);opacity:0;transform:translateY(8px) scale(.96);transition:.22s;font-family:var(--fontD);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.bubble.show{opacity:1;transform:translateY(0) scale(1)}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:10px;height:10px;background:rgba(22,16,18,.72);clip-path:polygon(0 0,100% 0,50% 100%)}
+.identity{text-align:center;margin-top:4px;position:relative;z-index:2}
+.identity b{font-family:var(--fontD);font-size:18px}
+.identity p{font-size:11px;color:var(--muted);line-height:1.55;margin:5px auto 0;max-width:480px}
+.stats{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;position:relative;z-index:2}
+.pill{font-size:10px;border:1.5px solid var(--line);background:#fff;padding:7px 10px;border-radius:99px;box-shadow:0 4px 10px rgba(120,70,40,.05)}
+.pill b{font-family:var(--fontD);color:#7a5237}
+.side{display:grid;gap:14px}
+.panel{padding:16px}
+.panel h3{font-family:var(--fontD);font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:6px}
+.primary{width:100%;border:0;background:#43342d;color:#fff;border-radius:16px;padding:13px;font-weight:800;font-family:var(--fontD);font-size:14px;box-shadow:0 10px 20px rgba(67,52,45,.24);transition:.2s}
+.primary:active{transform:translateY(1px)}
+.primary.ok{background:var(--good)}
+.note{font-size:10px;line-height:1.5;color:var(--muted);margin-top:7px}
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.act{border:1.5px solid var(--line);background:#fff;border-radius:14px;min-height:56px;font-size:10px;font-weight:800;padding:6px;transition:.16s;font-family:var(--fontD)}
+.act:active{transform:scale(.94);background:#fff3e8}
+.act span{display:block;font-size:21px;margin-bottom:2px}
+.progress{margin:8px 0}
+.prow{display:grid;grid-template-columns:56px 1fr 40px;gap:8px;align-items:center;font-size:10.5px}
+.bar{height:9px;background:#efe6db;border-radius:99px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+.stageChip{font-size:8.5px;text-align:center;padding:7px 3px;border-radius:10px;background:#f3ece6;color:#b3a699;transition:.2s;font-family:var(--fontD)}
+.stageChip.on{background:linear-gradient(135deg,#fff0bf,#ffd9e3);color:#5a4030;box-shadow:0 0 0 2px #ffe195;transform:scale(1.05)}
+.tabs{display:flex;gap:6px;margin-top:6px}
+.tab{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:9px 4px;font-size:10px;font-weight:800;font-family:var(--fontD);transition:.2s}
+.tab.on{background:#43342d;color:#fff;border-color:#43342d}
+.tabpane{display:none;margin-top:10px}
+.tabpane.on{display:block}
+.socialGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mini{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:10px;font-size:10px}
+.mini b{display:block;margin-bottom:4px;font-family:var(--fontD);font-size:11.5px}
+.heartline{text-align:center;padding:9px;border-radius:13px;background:#fff0f3;font-size:11px;font-weight:800;font-family:var(--fontD);margin-top:7px}
+.gene{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.gene div{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px;font-size:9.5px}
+.gene .swatch{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px;border:1px solid #0001}
+.babyCard{margin-top:9px;border:1.5px dashed #e2b85a;background:linear-gradient(160deg,#fff8da,#fff1e6);border-radius:16px;padding:12px;text-align:center}
+.babyScreen{width:150px;height:150px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 34%,#5d4548,#251d25 76%);padding:6px;box-shadow:inset 0 0 18px rgba(0,0,0,.5)}
+.babyScreen svg{width:100%;height:100%}
+.babyScreen .egg{transform-box:fill-box;transform-origin:center;animation:eggWobble 1.4s ease-in-out infinite}
+@keyframes eggWobble{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.babyScreen .hatch{transform-box:fill-box;transform-origin:center;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+.babyGenes{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:9px}
+.gchip{font-size:9.5px;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 9px}
+.gchip b{font-family:var(--fontD)}
+button.grow{width:100%;margin-top:9px;border:1.5px solid #e2b85a;background:#fff2c6;border-radius:14px;padding:11px;font-size:11px;font-weight:800;font-family:var(--fontD);transition:.2s}
+button.grow:active{transform:scale(.97)}
+@media(max-width:800px){
+  .grid{grid-template-columns:1fr}
+  .stage{height:450px}
+  .shell{transform:scale(.9)}
+}
+@media(max-width:390px){
+  .shell{transform:scale(.82)}
+  .stage{height:410px}
+  .actions{grid-template-columns:repeat(4,1fr)}
+  .brand{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="deco" style="top:8%;left:5%;font-size:30px">✦</div>
+  <div class="deco" style="top:16%;right:7%;font-size:22px;animation-delay:-2s">✧</div>
+  <div class="deco" style="top:60%;left:3%;font-size:24px;animation-delay:-4s">✿</div>
+  <div class="deco" style="top:78%;right:4%;font-size:26px;animation-delay:-1s">✦</div>
+
+  <header>
+    <div class="brandWrap">
+      <div class="logo" id="logoFace">🍞</div>
+      <div>
+        <div class="brand">THINGY FRIENDS<small>物物朋友 · 一只住在包挂里的小东西</small></div>
+      </div>
+    </div>
+    <div class="badge" id="secure">检测环境…</div>
+  </header>
+
+  <div class="card charbar">
+    <button class="cbtn on" data-c="toast"><span class="emo">🍞</span>麦啰 · 烘焙屋</button>
+    <button class="cbtn" data-c="cup"><span class="emo">☕️</span>咕杯 · 咖啡屋</button>
+    <button class="cbtn" data-c="camera"><span class="emo">📷</span>咔米 · 暗箱屋</button>
+    <button class="cbtn" data-c="milk"><span class="emo">🍓</span>莓噜 · 奶盒屋</button>
+  </div>
+
+  <div class="grid">
+    <section class="card hero">
+      <div class="titleRow">
+        <div>
+          <div class="kicker" id="kicker"></div>
+          <h1 id="name"></h1>
+          <div class="tiny">外壳永远不变 · 成长只发生在圆屏里</div>
+        </div>
+        <div class="badge" id="phaseBadge"></div>
+      </div>
+
+      <div class="stage">
+        <div class="shell" id="shell">
+          <div class="ring"></div>
+          <div class="tab"></div>
+          <div class="shellBody">
+            <div class="faceplate"><i></i><i></i></div>
+          </div>
+          <div class="screenFrame">
+            <div class="screen" id="screen">
+              <div class="topStatus"><span id="relTop"></span><span id="batTop"></span></div>
+              <div class="life" id="life"></div>
+              <div class="spark" id="spark"></div>
+              <div class="bubble" id="bubble"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="identity"><b id="title"></b><p id="desc"></p></div>
+      <div class="stats">
+        <div class="pill">成长 <b id="growth"></b>%</div>
+        <div class="pill">熟悉度 <b id="fam"></b>%</div>
+        <div class="pill">性格 <b id="personality"></b></div>
+        <div class="pill">关系 <b id="relation"></b></div>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="card panel">
+        <h3>📱 实机感知 / 互动</h3>
+        <button class="primary" id="sensorBtn">启用 iPhone 运动传感器</button>
+        <div class="note" id="msg">现实行为会改变成长、熟悉度和性格。</div>
+        <div class="actions" style="margin-top:10px">
+          <button class="act" data-a="walk"><span>🚶</span>走路</button>
+          <button class="act" data-a="run"><span>🏃</span>跑步</button>
+          <button class="act" data-a="shake"><span>🫨</span>猛摇</button>
+          <button class="act" data-a="pet"><span>🫳</span>摸摸</button>
+          <button class="act" data-a="talk"><span>💬</span>说话</button>
+          <button class="act" data-a="idle"><span>💤</span>冷落</button>
+          <button class="act" data-a="feed"><span>🔌</span>吃电</button>
+          <button class="act" data-a="drain"><span>🪫</span>掉电</button>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <h3>🌱 生命周期 · 10 阶段</h3>
+        <div class="progress">
+          <div class="prow"><span>成长</span><div class="bar"><div class="fill" id="growthBar"></div></div><b id="growthN"></b></div>
+        </div>
+        <div class="progress">
+          <div class="prow"><span>熟悉度</span><div class="bar"><div class="fill" id="famBar"></div></div><b id="famN"></b></div>
+        </div>
+        <div class="stages" id="stages"></div>
+        <button class="grow" id="growBtn">⚡ Demo：推进一个成长阶段</button>
+      </section>
+
+      <section class="card panel">
+        <h3>🧬 宠物世界</h3>
+        <div class="tabs">
+          <button class="tab on" data-tab="unlock">解锁</button>
+          <button class="tab" data-tab="social">社交</button>
+          <button class="tab" data-tab="gene">基因/宝宝</button>
+        </div>
+        <div class="tabpane on" id="unlock">
+          <div class="mini"><b>互动会随成长解锁</b><div id="unlockText"></div></div>
+        </div>
+        <div class="tabpane" id="social">
+          <div class="socialGrid">
+            <div class="mini"><b>我的宠物</b><span id="minePet"></span></div>
+            <div class="mini"><b>对方宠物</b><span>🍓 莓噜 · 熟人</span></div>
+          </div>
+          <div class="heartline" id="loveLine"></div>
+          <button class="grow" id="meetBtn">让两只宠物见面一次</button>
+        </div>
+        <div class="tabpane" id="gene">
+          <div class="gene" id="geneGrid"></div>
+          <button class="grow" id="babyBtn">生成一个 Demo 宝宝</button>
+          <div class="babyCard" id="babyCard">
+            <div class="babyScreen" id="babyScreen"></div>
+            <div class="babyGenes" id="babyGenes"></div>
+            <div class="note" id="babyNote">宝宝会继承双方的 Body / Feature / Color / Trait。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+const DEFS={
+  toast:{en:"MELLO",cn:"麦啰",kicker:"BAKERY HOME · 001",shell1:"#e8a15c",shell2:"#c97f4c",shell3:"#f3cf88",emo:"🍞",
+    stages:["面粉","加蛋","搅拌","面团","发酵","入炉","烘烤","吐司出生","抹黄油","性格进化"],
+    desc:["一小撮刚醒来的面粉","面粉里掉进了一颗蛋","开始被搅成一团","黏糊糊的小面团出现了","它正在偷偷发酵、越来越鼓","被推进了温暖的小烤箱","慢慢烤出金黄色的外壳","麦啰真正出生了","头顶多了一块黄油","属于它的性格分支觉醒了"],
+    talks:{low:["你……是谁？","这里是哪里呀？","你会一直带着我吗？"],mid:["你回来啦。","今天出去玩吗？","摸一下也不是不行。"],high:["哟，终于想起我了？","今天这点步数，你认真的？","别摸了别摸了……再摸一下。"],savage:["哥们，今天就这点运动量？","你是不是背着我养别的了？","我都熟成这样了，还装不认识？"]},
+    genes:{body:"Toast",feature:"Butter",color:"Caramel",trait:"Curious",c:"#e8a15c",c2:"#c97f4c"}},
+  cup:{en:"MUGU",cn:"咕杯",kicker:"COFFEE HOME · 002",shell1:"#9fd0bd",shell2:"#6fb097",shell3:"#d5efe6",emo:"☕️",
+    stages:["空杯","咖啡豆","研磨","萃取","蒸汽","奶泡","拿铁","咕杯出生","拉花","性格进化"],
+    desc:["一只空空的小杯子","几颗咖啡豆掉了进来","日常晃动把它慢慢磨碎","浓缩咖啡正在滴出来","杯口升起了蒸汽","奶泡慢慢铺满杯面","一杯拿铁完成了","咕杯正式醒过来","杯面多了一朵拉花","属于它的性格分支觉醒了"],
+    talks:{low:["杯子里怎么空空的…","你是店员吗？","可以不要晃太快吗？"],mid:["今天要续杯吗？","你又来了。","摸杯沿可以。"],high:["哟，咖啡搭子。","今天精神不太行啊。","再熬夜我可不陪你。"],savage:["不是吧，又熬夜？","你这作息比我咖啡还黑。","我建议你先给自己充个电。"]},
+    genes:{body:"Cup",feature:"Foam",color:"Mint",trait:"Calm",c:"#9fd0bd",c2:"#6fb097"}},
+  camera:{en:"CAMI",cn:"咔米",kicker:"DARKROOM HOME · 003",shell1:"#8d84b5",shell2:"#5f5787",shell3:"#c9c3e4",emo:"📷",
+    stages:["暗箱","底片","显影","定影","对焦","成像","咔米出生","镜头","取景","性格进化"],
+    desc:["暗箱里什么都看不见","一张底片开始出现","轮廓正在慢慢显影","画面被牢牢定住","眼睛终于能对焦了","画面一点点变清晰","咔米真正成像了","多了一颗会反光的镜头","开始学着取景看世界","属于它的性格分支觉醒了"],
+    talks:{low:["谁开灯了？","这里好暗。","你是摄影师吗？"],mid:["今天拍什么？","我看到你啦。","别戳镜头。"],high:["构图一般，再来。","今天光挺烂的。","你拍糊了别赖我。"],savage:["这张也敢留？","你今天是对焦对到月球了？","别看我，先看你的快门。"]},
+    genes:{body:"Camera",feature:"Lens",color:"Violet",trait:"Observant",c:"#8d84b5",c2:"#5f5787"}},
+  milk:{en:"BERRI",cn:"莓噜",kicker:"MILK HOME · 004",shell1:"#f3b8cc",shell2:"#e790ad",shell3:"#fce4ec",emo:"🍓",
+    stages:["白牛奶","草莓","浸泡","摇匀","变粉","奶泡","草莓奶","莓噜出生","草莓顶","性格进化"],
+    desc:["盒子里只有白牛奶","一颗草莓掉了进来","草莓在奶里慢慢泡开","走路把它一点一点摇匀","整盒正在悄悄变粉","表面冒出了绵密奶泡","草莓奶完成了","莓噜真正醒过来","头顶多了一颗小草莓","属于它的性格分支觉醒了"],
+    talks:{low:["你是谁呀…","这里甜甜的。","不要突然摇我。"],mid:["今天也带我嘛。","可以摸一下。","我有点想你。"],high:["你今天怎么这么晚？","再不摸我我要闹了。","哼，勉强原谅你。"],savage:["你今天是不是忘了我？","又想靠摸两下蒙混过关？","行吧，谁让我认识你这么久。"]},
+    genes:{body:"Milk",feature:"Straw",color:"Strawberry",trait:"Clingy",c:"#f3b8cc",c2:"#e790ad"}}
+};
+
+const state={char:"toast",growth:6,fam:4,energy:30,cling:30,mischief:16,battery:76,love:6,meet:0};
+const d=()=>DEFS[state.char];
+const ph=()=>Math.min(9,Math.floor(state.growth/10));
+const relation=()=>state.fam<15?"陌生":state.fam<35?"认识":state.fam<55?"熟人":state.fam<75?"好朋友":state.fam<90?"死党":"老搭子";
+function personality(){
+  if(ph()<6)return"未形成";
+  if(state.mischief>=state.cling&&state.mischief>=state.energy)return"顽皮";
+  if(state.cling>=state.energy)return"黏人";
+  return"活力";
+}
+function talkLine(){
+  const p=d().talks,a=state.fam<25?p.low:state.fam<55?p.mid:state.fam<85?p.high:p.savage;
+  let t=pick(a);
+  if(state.fam>55&&personality()==="顽皮")t+=" 😏";
+  if(state.fam>55&&personality()==="黏人"&&Math.random()>.5)t+=" ♥";
+  return t;
+}
+function say(t,ms=2000){
+  const e=$("#bubble");e.textContent=t;e.classList.add("show");
+  clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),ms);
+}
+
+/* ---------- Labubu-style face (big glinty eyes + jagged teeth grin) ---------- */
+function teeth(c,y,half,n){
+  const w=(half*2)/n;let p=`M${c-half} ${y}`;
+  for(let i=0;i<n;i++)p+=` L${c-half+w*i+w*0.5} ${y+8} L${c-half+w*(i+1)} ${y}`;
+  return `<path d="${p}" fill="#fff"/>`;
+}
+function face(o={}){
+  const c=120,eyeY=o.eyeY!=null?o.eyeY:112,gap=o.gap!=null?o.gap:44,r=o.r!=null?o.r:9.5,ec=o.ec||'#3a2b27',mouthY=o.mouthY!=null?o.mouthY:132,mood=o.mood||'happy',blush=o.blush!==false;
+  const lx=c-gap/2,rx=c+gap/2;
+  let eyes='',mouth='',brow='';
+  if(mood==='sleepy'){eyes=`<path d="M${lx-r} ${eyeY} Q${lx} ${eyeY+8} ${lx+r} ${eyeY}" stroke="${ec}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M${rx-r} ${eyeY} Q${rx} ${eyeY+8} ${rx+r} ${eyeY}" stroke="${ec}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;}
+  else if(mood==='love'){eyes=`<path d="M${lx} ${eyeY+7} C${lx-11} ${eyeY-4} ${lx-4} ${eyeY-13} ${lx} ${eyeY-2} C${lx+4} ${eyeY-13} ${lx+11} ${eyeY-4} ${lx} ${eyeY+7}" fill="#ef6d91"/><path d="M${rx} ${eyeY+7} C${rx-11} ${eyeY-4} ${rx-4} ${eyeY-13} ${rx} ${eyeY-2} C${rx+4} ${eyeY-13} ${rx+11} ${eyeY-4} ${rx} ${eyeY+7}" fill="#ef6d91"/>`;}
+  else if(mood==='dizzy'){eyes=`<g stroke="${ec}" stroke-width="3.4" stroke-linecap="round"><path d="M${lx-r} ${eyeY-r} L${lx+r} ${eyeY+r}"/><path d="M${lx+r} ${eyeY-r} L${lx-r} ${eyeY+r}"/><path d="M${rx-r} ${eyeY-r} L${rx+r} ${eyeY+r}"/><path d="M${rx+r} ${eyeY-r} L${rx-r} ${eyeY+r}"/></g>`;}
+  else if(mood==='naughty'){eyes=`<ellipse class="eye" cx="${lx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${lx+r*0.35}" cy="${eyeY-r*0.35}" r="${r*0.3}" fill="#fff"/><ellipse class="eye" cx="${rx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${rx+r*0.35}" cy="${eyeY-r*0.35}" r="${r*0.3}" fill="#fff"/>`;brow=`<path d="M${lx-r} ${eyeY-r-5} L${lx+r} ${eyeY-r-8}" stroke="${ec}" stroke-width="3" stroke-linecap="round"/><path d="M${rx-r} ${eyeY-r-8} L${rx+r} ${eyeY-r-5}" stroke="${ec}" stroke-width="3" stroke-linecap="round"/>`;}
+  else if(mood==='surprised'){eyes=`<ellipse class="eye" cx="${lx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${lx+r*0.32}" cy="${eyeY-r*0.35}" r="${r*0.3}" fill="#fff"/><ellipse class="eye" cx="${rx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${rx+r*0.32}" cy="${eyeY-r*0.35}" r="${r*0.3}" fill="#fff"/>`;}
+  else{eyes=`<ellipse class="eye" cx="${lx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${lx+r*0.34}" cy="${eyeY-r*0.36}" r="${r*0.3}" fill="#fff"/><circle cx="${lx-r*0.24}" cy="${eyeY+r*0.3}" r="${r*0.13}" fill="#fff"/><ellipse class="eye" cx="${rx}" cy="${eyeY}" rx="${r}" ry="${r+1}" fill="${ec}"/><circle cx="${rx+r*0.34}" cy="${eyeY-r*0.36}" r="${r*0.3}" fill="#fff"/><circle cx="${rx-r*0.24}" cy="${eyeY+r*0.3}" r="${r*0.13}" fill="#fff"/>`;}
+  if(mood==='sleepy'){mouth=`<path d="M${c-7} ${mouthY} Q${c} ${mouthY+5} ${c+7} ${mouthY}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;}
+  else if(mood==='surprised'){mouth=`<ellipse cx="${c}" cy="${mouthY+2}" rx="6.5" ry="9.5" fill="#5a2f34"/>`;}
+  else if(mood==='love'){mouth=`<path d="M${c-10} ${mouthY} Q${c} ${mouthY+11} ${c+10} ${mouthY}" stroke="#b3576d" stroke-width="3" fill="none" stroke-linecap="round"/>`;}
+  else if(mood==='dizzy'){mouth=`<path d="M${c-8} ${mouthY+3} Q${c} ${mouthY-5} ${c+8} ${mouthY+3}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;}
+  else{mouth=`<path d="M${c-24} ${mouthY} Q${c} ${mouthY+18} ${c+24} ${mouthY} Z" fill="#6b3538"/>${teeth(c,mouthY,24,8)}<path d="M${c-24} ${mouthY} Q${c} ${mouthY+18} ${c+24} ${mouthY}" stroke="${ec}" stroke-width="3" fill="none" stroke-linecap="round"/>`;}
+  const bl=blush?`<circle cx="${lx-r-7}" cy="${eyeY+11}" r="5.5" fill="#ff9fb4" opacity=".5"/><circle cx="${rx+r+7}" cy="${eyeY+11}" r="5.5" fill="#ff9fb4" opacity=".5"/>`:'';
+  return `<g>${brow}${eyes}${mouth}${bl}</g>`;
+}
+function pointedEars(c){return `<path d="M84 96 L70 54 L104 80 Z" fill="${c}"/><path d="M156 96 L170 54 L136 80 Z" fill="${c}"/>`;}
+
+/* ---------- adult creature (stage 7-9) ---------- */
+function creature(char,mood){
+  const f=face({mood});
+  if(char==='toast')return `<rect x="60" y="62" width="120" height="122" rx="46" fill="#c97f4c"/><rect x="68" y="70" width="104" height="106" rx="38" fill="#f3cf88"/><rect x="88" y="52" width="66" height="26" rx="13" fill="#ffd75e" transform="rotate(-5 121 65)"/>${f}`;
+  if(char==='cup')return `<path d="M68 78 H172 L162 176 Q120 192 78 176 Z" fill="#6fb097"/><path d="M70 88 H170 L161 168 Q120 182 80 168 Z" fill="#d5efe6"/><path d="M170 90 h13 a11 11 0 0 1 0 24 h-13" fill="none" stroke="#6fb097" stroke-width="8" stroke-linecap="round"/>${f}`;
+  if(char==='camera')return `<rect x="56" y="72" width="128" height="104" rx="28" fill="#5f5787"/><rect x="66" y="82" width="108" height="84" rx="20" fill="#8d84b5"/><circle cx="120" cy="60" r="10" fill="#e8a15c" stroke="#c97f4c" stroke-width="3"/>${f}`;
+  return `<rect x="72" y="64" width="96" height="128" rx="22" fill="#e790ad"/><rect x="80" y="72" width="80" height="112" rx="16" fill="#fce4ec"/><path d="M114 50 L132 50 L127 70 L119 70 Z" fill="#ff7fa5"/>${f}`;
+}
+function sparkle(cx,cy,sz,c="#fff"){return `<path d="M${cx} ${cy-sz} Q${cx} ${cy} ${cx+sz} ${cy} Q${cx} ${cy} ${cx} ${cy+sz} Q${cx} ${cy} ${cx-sz} ${cy} Q${cx} ${cy} ${cx} ${cy-sz} Z" fill="${c}"/>`;}
+
+/* ---------- narrative stage art (0-9) ---------- */
+function stageSVG(char){
+  const p=ph(),c=d();
+  if(p===9){
+    const mood={顽皮:'naughty',黏人:'love',活力:'surprised'}[personality()]||'happy';
+    const aura={顽皮:'#c9b2ff',黏人:'#ffb7cf',活力:'#ffd166'}[personality()]||'#ffd166';
+    return `<svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="114" fill="${aura}" opacity=".16"/><circle class="aura" cx="120" cy="120" r="100" fill="none" stroke="${aura}" stroke-width="2.5"/>${creature(char,mood)}${sparkle(44,60,7,aura)}${sparkle(200,52,5,aura)}${sparkle(40,180,6,aura)}${sparkle(204,184,6,aura)}</svg>`;
+  }
+  const f=face({mood:'happy'});
+  if(char==='toast'){
+    const a=[
+      `<svg viewBox="0 0 240 240"><ellipse cx="120" cy="140" rx="66" ry="26" fill="#efe0c4"/><circle cx="98" cy="136" r="4.5" fill="#4a3a30"/><circle cx="142" cy="136" r="4.5" fill="#4a3a30"/></svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="120" cy="142" rx="70" ry="28" fill="#efe0c4"/><ellipse cx="120" cy="122" rx="30" ry="36" fill="#ffd56a"/><circle cx="120" cy="122" rx="16" ry="20" fill="#fff2cf" opacity=".8"/></svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="120" cy="132" rx="72" ry="50" fill="#ead0a3"/><path d="M88 132 Q120 110 152 132 Q120 154 88 132" fill="none" stroke="#c9a06a" stroke-width="4" stroke-dasharray="6 7"/>${face({mood:'dizzy',eyeY:120,gap:40,r:8,mouthY:140})}</svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="120" cy="126" rx="76" ry="58" fill="#ead0a3"/>${face({mood:'happy',eyeY:116,gap:44,r:9,mouthY:136})}</svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="120" cy="120" rx="82" ry="66" fill="#ead0a3"/><circle cx="88" cy="88" r="5" fill="#fff" opacity=".7"/><circle cx="150" cy="82" r="6" fill="#fff" opacity=".7"/><circle cx="70" cy="120" r="4" fill="#fff" opacity=".6"/>${face({mood:'sleepy',eyeY:112,gap:48,r:9,mouthY:134})}</svg>`,
+      `<svg viewBox="0 0 240 240"><rect x="54" y="50" width="132" height="134" rx="20" fill="#3a2a22"/><rect x="66" y="62" width="108" height="110" rx="14" fill="#5d3a2a"/><ellipse cx="120" cy="126" rx="70" ry="52" fill="#e8a86a"/>${face({mood:'surprised',eyeY:118,gap:46,r:8.5,mouthY:138})}<path d="M92 46 Q120 34 148 46" stroke="#ffd166" stroke-width="4" fill="none" stroke-linecap="round" opacity=".85"/></svg>`,
+      `<svg viewBox="0 0 240 240"><rect x="56" y="58" width="128" height="128" rx="46" fill="#d98a4e"/><rect x="66" y="68" width="108" height="108" rx="38" fill="#f0c078"/><path d="M104 46 Q120 38 136 46" stroke="#ff9d3d" stroke-width="4" fill="none" stroke-linecap="round"/>${face({mood:'happy',eyeY:116,gap:46,r:9,mouthY:136})}</svg>`
+    ];
+    if(p<=6)return a[p];
+    return `<svg viewBox="0 0 240 240">${creature('toast',p===8?'naughty':'happy')}</svg>`;
+  }
+  if(char==='cup'){
+    const a=[
+      `<svg viewBox="0 0 240 240"><path d="M64 66 H166 L156 168 Q120 186 74 168 Z" fill="#d9f2e8"/><path d="M166 78 h14 a12 12 0 0 1 0 26 h-14" fill="none" stroke="#9fd0bd" stroke-width="8"/></svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="108" cy="142" rx="60" ry="30" fill="#4f3329"/><circle cx="84" cy="132" r="11" fill="#6d4936"/><circle cx="122" cy="146" r="10" fill="#6d4936"/><circle cx="104" cy="116" r="9" fill="#7c5740"/></svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="112" cy="140" rx="62" ry="30" fill="#4f3329"/><path d="M82 140 Q112 120 142 140" stroke="#7c5740" stroke-width="5" fill="none" opacity=".7"/><circle cx="88" cy="118" r="5" fill="#8a6a4a"/><circle cx="118" cy="112" r="5" fill="#8a6a4a"/></svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="112" cy="136" rx="68" ry="44" fill="#5e4035"/><ellipse cx="112" cy="122" rx="54" ry="32" fill="#3a261f"/>${face({mood:'sleepy',eyeY:112,gap:44,r:8,mouthY:134})}</svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="112" cy="136" rx="68" ry="46" fill="#5e4035"/><path d="M96 70 Q112 50 128 70" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><path d="M104 60 Q112 44 120 60" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".55"/>${face({mood:'happy',eyeY:114,gap:44,r:8,mouthY:136})}</svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="112" cy="132" rx="70" ry="50" fill="#6b4638"/><path d="M66 112 Q112 70 158 112" stroke="#fff4e8" stroke-width="20" fill="none" stroke-linecap="round"/>${face({mood:'happy',eyeY:114,gap:44,r:8,mouthY:136})}</svg>`,
+      `<svg viewBox="0 0 240 240"><ellipse cx="112" cy="132" rx="72" ry="52" fill="#9b6d59"/><path d="M66 112 Q112 70 158 112" stroke="#fff4e8" stroke-width="18" fill="none" stroke-linecap="round"/>${face({mood:'happy',eyeY:116,gap:44,r:8.5,mouthY:138})}</svg>`
+    ];
+    if(p<=6)return a[p];
+    return `<svg viewBox="0 0 240 240">${creature('cup',p===8?'naughty':'happy')}</svg>`;
+  }
+  if(char==='camera'){
+    const a=[
+      `<svg viewBox="0 0 240 240"><rect x="34" y="50" width="172" height="138" rx="26" fill="#171821"/><rect x="48" y="64" width="144" height="110" rx="18" fill="#0e0f15"/><text x="94" y="126" fill="#777" font-size="16" font-family="monospace">dark</text></svg>`,
+      `<svg viewBox="0 0 240 240"><rect x="44" y="56" width="152" height="126" rx="14" fill="#d7d1cf"/><circle cx="106" cy="114" r="40" fill="#777" opacity=".28"/><rect x="58" y="70" width="124" height="14" fill="#b8b0ab"/></svg>`,
+      `<svg viewBox="0 0 240 240"><rect x="44" y="56" width="152" height="126" rx="14" fill="#cfc8c4"/><circle cx="108" cy="114" r="42" fill="#8a8288" opacity=".5"/><circle cx="108" cy="114" r="20" fill="#6a6370" opacity=".5"/></svg>`,
+      `<svg viewBox="0 0 240 240"><rect x="44" y="56" width="152" height="126" rx="14" fill="#b9b1ac"/><circle cx="108" cy="114" r="44" fill="#7d7582"/><circle cx="108" cy="114" r="22" fill="#3a3540"/></svg>`,
+      `<svg viewBox="0 0 240 240"><circle cx="110" cy="114" r="58" fill="none" stroke="#8d84b5" stroke-width="3"/><circle cx="110" cy="114" r="70" fill="none" stroke="#8d84b5" stroke-width="2" opacity=".5"/><circle cx="110" cy="114" r="26" fill="#3a3540"/>${face({mood:'surprised',eyeY:112,gap:44,r:8,mouthY:134})}</svg>`,
+      `<svg viewBox="0 0 240 240"><circle cx="110" cy="114" r="64" fill="#5f5787"/><circle cx="110" cy="114" r="30" fill="#171820"/><circle cx="110" cy="114" r="24" fill="none" stroke="#c9c3e4" stroke-width="2"/>${face({mood:'happy',eyeY:112,gap:44,r:8,mouthY:134})}</svg>`,
+      `<svg viewBox="0 0 240 240"><circle cx="110" cy="112" r="68" fill="#6a628f"/><circle cx="110" cy="112" r="34" fill="#171820"/><circle cx="110" cy="112" r="28" fill="none" stroke="#c9c3e4" stroke-width="2"/>${face({mood:'happy',eyeY:114,gap:46,r:8.5,mouthY:136})}</svg>`
+    ];
+    if(p<=6)return a[p];
+    return `<svg viewBox="0 0 240 240">${creature('camera',p===8?'naughty':'happy')}</svg>`;
+  }
+  // milk
+  const a=[
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#fffaf5"/><path d="M108 40 L132 40 L124 64 L116 64 Z" fill="#f3e2da"/></svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#fffaf5"/><path d="M108 40 L132 40 L124 64 L116 64 Z" fill="#f3e2da"/><circle cx="120" cy="116" r="32" fill="#ef6f8d"/></svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#fff3ee"/><circle cx="120" cy="122" r="34" fill="#ef6f8d" opacity=".85"/><circle cx="120" cy="122" r="40" fill="none" stroke="#f4a9bf" stroke-width="4" opacity=".7"/></svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#ffd9e2"/><path d="M84 120 Q120 104 156 120" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round"/>${face({mood:'dizzy',eyeY:112,gap:44,r:8.5,mouthY:134})}</svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#f7b7ca"/>${face({mood:'happy',eyeY:112,gap:44,r:8.5,mouthY:134})}</svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#f7aec4"/><circle cx="80" cy="74" r="8" fill="#fff" opacity=".8"/><circle cx="100" cy="64" r="6" fill="#fff" opacity=".7"/><circle cx="142" cy="70" r="7" fill="#fff" opacity=".75"/>${face({mood:'happy',eyeY:112,gap:44,r:8.5,mouthY:134})}</svg>`,
+    `<svg viewBox="0 0 240 240"><rect x="58" y="46" width="124" height="148" rx="22" fill="#f39cb7"/><path d="M108 40 L132 40 L124 64 L116 64 Z" fill="#ff7fa5"/>${face({mood:'happy',eyeY:112,gap:44,r:8.5,mouthY:134})}</svg>`
+  ];
+  if(p<=6)return a[p];
+  return `<svg viewBox="0 0 240 240">${creature('milk',p===8?'naughty':'happy')}</svg>`;
+}
+
+/* ---------- baby rendering (inherits genes) ---------- */
+const GENE_MOOD={Curious:'happy',Calm:'sleepy',Observant:'happy',Clingy:'love',Naughty:'naughty',Energetic:'naughty'};
+function bodyShape(type,c,c2){
+  if(type==='Toast')return `<rect x="76" y="86" width="88" height="90" rx="40" fill="${c}"/><rect x="85" y="95" width="70" height="72" rx="32" fill="${c2}" opacity=".55"/>`;
+  if(type==='Cup')return `<path d="M80 90 H160 L153 176 Q120 190 87 176 Z" fill="${c}"/><path d="M160 94 h13 a10 10 0 0 1 0 22 h-13" fill="none" stroke="${c2}" stroke-width="7"/>`;
+  if(type==='Camera')return `<rect x="64" y="88" width="112" height="92" rx="24" fill="${c}"/><rect x="77" y="101" width="86" height="66" rx="14" fill="${c2}"/>`;
+  return `<rect x="82" y="78" width="76" height="114" rx="20" fill="${c}"/><path d="M106 60 L120 60 L116 78 L110 78 Z" fill="${c2}"/>`;
+}
+function featureArt(f){
+  if(f==='Butter')return `<rect x="98" y="74" width="44" height="20" rx="9" fill="#ffd75e" transform="rotate(-8 120 84)"/>`;
+  if(f==='Foam')return `<g fill="#fff" opacity=".9"><circle cx="96" cy="80" r="7"/><circle cx="110" cy="74" r="9"/><circle cx="126" cy="78" r="7"/><circle cx="140" cy="84" r="5"/></g>`;
+  if(f==='Lens')return `<circle cx="168" cy="98" r="16" fill="#8fd3f0" stroke="#5f9fbf" stroke-width="4"/><circle cx="168" cy="98" r="6" fill="#2b5f7a"/>`;
+  return `<rect x="116" y="54" width="9" height="34" rx="4" fill="#ff7fa5" transform="rotate(8 120 62)"/>`;
+}
+function babySVG(b){
+  const mood=GENE_MOOD[b.trait]||'happy';
+  const ears=(b.body==='Toast')?'':pointedEars(b.c);
+  return `<svg viewBox="0 0 240 240">${ears}${bodyShape(b.body,b.c,b.c2)}${face({mood,eyeY:118,gap:46,r:10,mouthY:138})}${featureArt(b.feature)}</svg>`;
+}
+function eggSVG(){
+  return `<svg viewBox="0 0 240 240"><g class="egg"><path d="M120 54 C152 54 166 82 166 110 C166 154 143 188 120 188 C97 188 74 154 74 110 C74 82 88 54 120 54 Z" fill="#fff3e0" stroke="#e8c9a0" stroke-width="5"/><path d="M120 70 L98 96 L120 108 L132 92 Z" fill="#f6d8a8"/><path d="M118 94 L108 122 L124 128 L130 104 Z" fill="#fff"/><circle cx="120" cy="128" r="6" fill="#f6d8a8"/></g></svg>`;
+}
+
+function unlockText(){
+  const p=ph();
+  if(p<1)return"现在只会看你和小声说话，还不敢让你摸。";
+  if(p<2)return"已解锁：轻触回应。";
+  if(p<3)return"已解锁：摸摸、简单撒娇。";
+  if(p<4)return"已解锁：吐槽与玩笑。";
+  if(p<5)return"已解锁：更多动作回应。";
+  if(p<6)return"性格开始成形。";
+  if(p<7)return"已解锁：宠物社交、见面记录。";
+  if(p<8)return"已解锁：恋爱与关系事件。";
+  if(p<9)return"已解锁：基因与宝宝。";
+  return"已解锁：长期关系、进化分支与稀有事件。";
+}
+
+let lastPhase=null;
+function render(){
+  const x=d(),p=ph();
+  const root=document.documentElement.style;
+  root.setProperty('--shell1',x.shell1);root.setProperty('--shell2',x.shell2);root.setProperty('--shell3',x.shell3);
+  $("#logoFace").textContent=x.emo;
+  $("#name").textContent=x.en+" "+x.cn;
+  $("#kicker").textContent=x.kicker;
+  $("#phaseBadge").textContent=x.stages[p];
+  $("#title").textContent=x.desc[p];
+  $("#desc").textContent=p<9?"外壳没有长大，成长全部发生在圆屏内部。":"它已真正出生，性格与关系还会继续变化。";
+  $("#life").innerHTML=stageSVG(state.char);
+  $("#growth").textContent=Math.round(state.growth);
+  $("#fam").textContent=Math.round(state.fam);
+  $("#personality").textContent=personality();
+  $("#relation").textContent=relation();
+  $("#relTop").textContent=relation()+" · FAM "+Math.round(state.fam);
+  $("#batTop").textContent=Math.round(state.battery)+"%";
+  $("#growthBar").style.width=state.growth+'%';
+  $("#growthN").textContent=Math.round(state.growth);
+  $("#famBar").style.width=state.fam+'%';
+  $("#famN").textContent=Math.round(state.fam);
+  $("#stages").innerHTML=x.stages.map((s,i)=>`<div class="stageChip ${i===p?'on':''}">${s}</div>`).join('');
+  $("#unlockText").textContent=unlockText();
+  $("#minePet").textContent=x.cn+" · "+relation();
+  $("#loveLine").textContent="关系："+(state.love<20?"初次见面":state.love<45?"朋友":state.love<70?"暧昧":state.love<90?"恋爱":"老夫老妻")+" · Love "+Math.round(state.love);
+  $("#geneGrid").innerHTML=Object.entries(x.genes).filter(([k])=>k!=='c'&&k!=='c2').map(([k,v])=>`<div><b>${k}</b><br>${v}</div>`).join('');
+  document.querySelectorAll('.cbtn').forEach(b=>b.classList.toggle('on',b.dataset.c===state.char));
+  if(lastPhase!==null&&p!==lastPhase)evolveFX();
+  lastPhase=p;
+}
+function evolveFX(){
+  const s=$("#spark");s.classList.remove('on');void s.offsetWidth;s.classList.add('on');
+  const l=$("#life");l.classList.remove('pop');void l.offsetWidth;l.classList.add('pop');
+}
+
+function interact(k){
+  if(k==='talk'){say(talkLine());return;}
+  if(k==='pet'){
+    if(ph()<2){say('我们……还没熟到可以摸啦。');return;}
+    state.fam=clamp(state.fam+2.5);state.cling=clamp(state.cling+2);
+    say(state.fam>60?'摸上瘾了是吧？':'……再摸一下也行。');render();return;
+  }
+  if(k==='walk'){state.growth=clamp(state.growth+2);state.energy=clamp(state.energy+1.5);state.fam=clamp(state.fam+.5);state.battery=clamp(state.battery-.3);say(ph()<3?'摇摇晃晃的……':'今天去哪儿？');render();return;}
+  if(k==='run'){state.growth=clamp(state.growth+3);state.energy=clamp(state.energy+3);state.battery=clamp(state.battery-.6);say('慢一点！我要飞出去啦！');render();return;}
+  if(k==='shake'){state.mischief=clamp(state.mischief+3);state.fam=clamp(state.fam-.4);say(state.char==='milk'?'别摇了！奶泡全糊脸上了！':'晕啦！你故意的是吧！');render();return;}
+  if(k==='idle'){state.fam=clamp(state.fam-.7);say(state.fam>55?'哟，终于舍得看我了？':'今天你好忙呀。');render();return;}
+  if(k==='feed'){state.battery=clamp(state.battery+25);state.fam=clamp(state.fam+.7);say(pick(['啊呜！电真好吃。','再来一口电！','充电线是我的饭碗。']));render();return;}
+  if(k==='drain'){state.battery=clamp(state.battery-25);say(state.battery<10?'我真的要饿死了……':state.battery<30?'我饿了，给口电吃嘛。':'肚子有点空。');render();}
+}
+
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>interact(b.dataset.a));
+document.querySelectorAll('.cbtn').forEach(b=>b.onclick=()=>{
+  state.char=b.dataset.c;state.growth=6;state.fam=4;state.love=6;lastPhase=null;render();say('你……是谁？');
+});
+$("#screen").onclick=()=>interact('pet');
+$("#growBtn").onclick=()=>{
+  if(ph()<9){state.growth=clamp(state.growth+11);state.fam=clamp(state.fam+6);say('发生变化了：'+d().stages[ph()]+' ✨',2200);}
+  else{state.fam=clamp(state.fam+5);say('身体不再长了，但我们会越来越熟。');}
+  render();
+};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');$("#"+b.dataset.tab).classList.add('on');
+});
+$("#meetBtn").onclick=()=>{
+  if(ph()<7){say('还太小，先长大一点再交朋友。');return;}
+  state.meet++;state.love=clamp(state.love+8+Math.random()*6);
+  say(pick(['你是谁呀？','又见面啦！','她来了！快看！','今天可以一起玩吗？']));render();
+};
+$("#babyBtn").onclick=()=>{
+  const me=d().genes,mom=DEFS.milk.genes;
+  const gate=ph()>=9&&state.love>=60;
+  const p=(a,b)=>Math.random()>.5?a:b;
+  const baby={body:p(me.body,mom.body),feature:p(me.feature,mom.feature),color:p(me.color,mom.color),trait:p(me.trait,mom.trait),c:p(me.c,mom.c),c2:p(me.c2,mom.c2)};
+  const scr=$("#babyScreen"),gen=$("#babyGenes"),note=$("#babyNote");
+  scr.innerHTML=eggSVG();
+  gen.innerHTML='<span class="gchip">🥚 正在孵化…</span>';
+  note.textContent=gate?"宝宝继承了双方的基因。":"Demo 预览：条件未完全成熟（需成年且关系≥恋爱），先用默认莓噜基因演示。";
+  setTimeout(()=>{
+    scr.innerHTML='<svg viewBox="0 0 240 240"><g class="hatch">'+babySVG(baby)+'</g></svg>';
+    gen.innerHTML=`
+      <span class="gchip">Body <b>${baby.body}</b></span>
+      <span class="gchip">Feature <b>${baby.feature}</b></span>
+      <span class="gchip">Color <b>${baby.color}</b></span>
+      <span class="gchip">Trait <b>${baby.trait}</b></span>`;
+  },1200);
+  say('……我们有宝宝蛋了？！',2300);
+};
+async function enableSensors(){
+  let btn=$("#sensorBtn"),msg=$("#msg");
+  try{
+    let r=[];
+    if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function')r.push(await DeviceMotionEvent.requestPermission());
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')r.push(await DeviceOrientationEvent.requestPermission());
+    if(r.some(x=>x!=='granted'))throw Error('权限未允许');
+    btn.textContent='✓ iPhone IMU 已连接';btn.classList.add('ok');
+    msg.textContent='已连接。真实动作会增加成长、活力和关系记录。';
+    let last=0,buf=[];
+    window.addEventListener('devicemotion',e=>{
+      let now=Date.now(),a=e.acceleration||{},m=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2);
+      buf.push({t:now,m,x:a.x||0});buf=buf.filter(v=>now-v.t<650);
+      if(now-last<500)return;
+      let rms=Math.sqrt(buf.reduce((s,v)=>s+v.m*v.m,0)/(buf.length||1)),rev=0;
+      for(let i=1;i<buf.length;i++)if(Math.sign(buf[i-1].x)!=Math.sign(buf[i].x)&&Math.abs(buf[i-1].x-buf[i].x)>4)rev++;
+      if(rms>5.8&&rev>=4){last=now;interact('shake');}
+      else if(m>1.2&&m<4.8){last=now;interact('walk');}
+    },true);
+  }catch(e){msg.textContent='启用失败：'+e.message+'。请使用 Safari 并允许运动与方向访问。';}
+}
+$("#sensorBtn").onclick=enableSensors;
+$("#secure").textContent=window.isSecureContext?'✓ HTTPS':'⚠ 非 HTTPS';
+render();say('你……是谁？',1600);
+</script>
+</body>
+</html>
